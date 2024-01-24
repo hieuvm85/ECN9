@@ -6,11 +6,16 @@ import java.util.Optional;import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,15 +99,56 @@ public class UserController {
 	@PostMapping("/signin")
 	public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest)
 	{
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-		);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		CustomerUserDetail customerUserDetail = (CustomerUserDetail) authentication.getPrincipal();
-		String jwt =  tokenProvider.genarateToken(customerUserDetail);
-		List<String> listRoles= customerUserDetail.getAuthorities().stream()
-									.map(item->item.getAuthority()).collect(Collectors.toList());
-		return ResponseEntity.ok(new JwtRespone(jwt, customerUserDetail.getUsername(), customerUserDetail.getEmail(), listRoles));
+//		System.out.println("log 1");
+//		Authentication authentication = authenticationManager.authenticate(
+//				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+//		);
+//		System.out.println("log 2");
+//		SecurityContextHolder.getContext().setAuthentication(authentication);
+//		System.out.println("log 3");
+//		CustomerUserDetail customerUserDetail = (CustomerUserDetail) authentication.getPrincipal();
+//		System.out.println("log 4");
+//		String jwt =  tokenProvider.genarateToken(customerUserDetail);
+//		System.out.println("log 5");
+//		List<String> listRoles= customerUserDetail.getAuthorities().stream()
+//									.map(item->item.getAuthority()).collect(Collectors.toList());
+//		System.out.println("log 6");
+//		return ResponseEntity.ok(new JwtRespone(jwt, customerUserDetail.getUsername(), customerUserDetail.getEmail(), listRoles));
+		 try {
+		        Authentication authentication = authenticationManager.authenticate(
+		                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+		        );
+		        // Các bước tiếp theo sau khi xác thực thành công
+
+		        SecurityContextHolder.getContext().setAuthentication(authentication);
+		        CustomerUserDetail customerUserDetail = (CustomerUserDetail) authentication.getPrincipal();
+		        String jwt =  tokenProvider.genarateToken(customerUserDetail);
+		        List<String> listRoles = customerUserDetail.getAuthorities().stream()
+		                                    .map(item -> item.getAuthority())
+		                                    .collect(Collectors.toList());
+
+		        return ResponseEntity.ok(new JwtRespone(jwt, customerUserDetail.getUsername(), customerUserDetail.getEmail(), listRoles));
+		    } catch (BadCredentialsException e) {
+		        // Xử lý khi tên người dùng hoặc mật khẩu không đúng
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Invalid username or password."));
+		    } catch (DisabledException e) {
+		        // Xử lý khi tài khoản bị vô hiệu hóa
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Account is disabled."));
+		    } catch (LockedException e) {
+		        // Xử lý khi tài khoản bị khóa
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Account is locked."));
+		    } catch (UsernameNotFoundException e) {
+		        // Xử lý khi không tìm thấy tên người dùng
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("Username not found."));
+		    } catch (Exception e) {
+		        // Xử lý các trường hợp khác
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal server error."));
+		    }
 		
 		
 	}
