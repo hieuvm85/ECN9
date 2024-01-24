@@ -104,6 +104,12 @@ public class CustomerUserDetail implements UserDetails{
 		// TODO Auto-generated method stub
 		return true;
 	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 //	@Override
 //	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -146,5 +152,5 @@ public class CustomerUserDetail implements UserDetails{
 //		// TODO Auto-generated method stub
 //		return false;
 //	}
-
+	
 }

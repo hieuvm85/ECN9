@@ -1,6 +1,7 @@
 package com.example.Ecommerce_BE.model.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +22,7 @@ public class Roles {
 	private int id;
 	
 	@JoinColumn
-	@Enumerated
+	@Enumerated(EnumType.STRING)
 	private ERole roleName;
 
 	

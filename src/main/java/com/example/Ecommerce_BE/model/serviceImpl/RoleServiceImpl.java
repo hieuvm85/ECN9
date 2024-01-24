@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.Ecommerce_BE.model.entity.ERole;
 import com.example.Ecommerce_BE.model.entity.Roles;
 import com.example.Ecommerce_BE.model.service.RoleService;
 import com.example.Ecommerce_BE.repository.RoleRepository;
@@ -17,7 +18,7 @@ public class RoleServiceImpl implements RoleService{
 	private RoleRepository roleRepository;
 
 	@Override
-	public Optional<Roles> findByRoleName(String roleName) {
+	public Optional<Roles> findByRoleName(ERole roleName) {
 		// TODO Auto-generated method stub
 		return roleRepository.findByRoleName(roleName);
 	}
