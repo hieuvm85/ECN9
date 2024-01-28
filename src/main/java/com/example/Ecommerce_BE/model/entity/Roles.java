@@ -26,9 +26,6 @@ public class Roles {
 	private ERole roleName;
 
 	
-	
-	
-	
 	public int getId() {
 		return id;
 	}
