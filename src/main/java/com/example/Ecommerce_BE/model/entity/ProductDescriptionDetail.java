@@ -1,7 +1,5 @@
 package com.example.Ecommerce_BE.model.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ValueGenerationType;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Data;
@@ -17,18 +17,19 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "notification")
-public class Notification {
+@Table(name = "product_detail")
+public class ProductDescriptionDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private String notification;
-	private LocalDateTime created;
+	
+	private String title;
+	private String description;
 	
 	@ManyToOne
 	@JsonBackReference
-	@JoinColumn(name = "customer_id")
-	private Customer customer;
+	@JoinColumn(name = "product_id")
+	private Product product;
 
 	public int getId() {
 		return id;
@@ -38,28 +39,28 @@ public class Notification {
 		this.id = id;
 	}
 
-	public String getNotification() {
-		return notification;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setNotification(String notification) {
-		this.notification = notification;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public LocalDateTime getCreated() {
-		return created;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setCreated(LocalDateTime created) {
-		this.created = created;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public Customer getCustomer() {
-		return customer;
+	public Product getProduct() {
+		return product;
 	}
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 	
 	
