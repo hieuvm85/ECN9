@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 @Entity
 @Data
-@Table(name = "order")
+@Table(name = "orders")
 public class Order { // mot order chi chua nhung san pham cua cung mot shop
 
 	@Id
