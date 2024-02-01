@@ -2,10 +2,13 @@ package com.example.Ecommerce_BE.payload.request;
 
 import java.util.List;
 
+import com.example.Ecommerce_BE.model.entity.Name;
+
 public class SignupRequest {
 	private String username;
 	private String password;
 	private String email;
+	private Name name;
 	private boolean status = true;
 	
 	private List<String> listRoles;
@@ -39,6 +42,12 @@ public class SignupRequest {
 	}
 	public void setListRoles(List<String> listRoles) {
 		this.listRoles = listRoles;
+	}
+	public Name getName() {
+		return name;
+	}
+	public void setName(Name name) {
+		this.name = name;
 	}
 	
 	

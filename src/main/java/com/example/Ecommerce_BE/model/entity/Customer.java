@@ -48,7 +48,7 @@ public class Customer extends Users{
 	private List<Order> orders;
 	
 	@OneToMany(mappedBy = "customer")
-	@JsonManagedReference
+	@JsonBackReference
 	private List<Notification> notifications;
 
 	public Address getAdress() {

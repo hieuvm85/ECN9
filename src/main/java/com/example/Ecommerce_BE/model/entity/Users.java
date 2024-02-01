@@ -64,6 +64,7 @@ public class Users {
 	private String linkImageAvatar;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
+	@JsonIgnore
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), 
 				inverseJoinColumns = @JoinColumn(name = "role_id" ))
 	private List<Roles> listRoles= new ArrayList<>();
@@ -126,6 +127,22 @@ public class Users {
 
 	public void setListRoles(List<Roles> listRoles) {
 		this.listRoles = listRoles;
+	}
+
+	public Name getName() {
+		return name;
+	}
+
+	public void setName(Name name) {
+		this.name = name;
+	}
+
+	public String getLinkImageAvatar() {
+		return linkImageAvatar;
+	}
+
+	public void setLinkImageAvatar(String linkImageAvatar) {
+		this.linkImageAvatar = linkImageAvatar;
 	}
 	
 	

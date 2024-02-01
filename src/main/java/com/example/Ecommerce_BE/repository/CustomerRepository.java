@@ -7,5 +7,5 @@ import com.example.Ecommerce_BE.model.entity.Customer;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
-
+	Customer findCustomerByUsername(String username);
 }
