@@ -24,6 +24,7 @@ public class Notification {
 	private int id;
 	private String notification;
 	private LocalDateTime created;
+	private boolean status;
 	
 	@ManyToOne
 	@JsonBackReference
@@ -60,6 +61,14 @@ public class Notification {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 	
 	

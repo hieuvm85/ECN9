@@ -7,5 +7,6 @@ import com.example.Ecommerce_BE.model.entity.Address;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer>{
-
+	boolean existsByCityAndDistrictAndWardAndDetail(String city, String district, String ward, String detail);
+	Address findByCityAndDistrictAndWardAndDetail(String city, String district, String ward, String detail);
 }

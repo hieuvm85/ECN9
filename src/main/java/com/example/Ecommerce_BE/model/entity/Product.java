@@ -31,7 +31,7 @@ public class Product {
 	private String title;
 	private int quantity;
 	private float weight;// kg
-	private boolean statusSale;// 1 la ban 2 la khong ban
+	private boolean statusSale;// true la ban false la khong ban
 	private String description;
 	private float rate;
 	

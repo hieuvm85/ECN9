@@ -34,17 +34,17 @@ public class Address {
 	private String detail;
 	
 	
-	@OneToMany(mappedBy = "addressDelivery")
-	@JsonBackReference
-	private List<Order> orders;
-	
-	@OneToMany(mappedBy = "adress")
-	@JsonBackReference
-	private List<Customer> customers;
-	
-	@OneToMany(mappedBy = "addressShop")
-	@JsonBackReference
-	private List<Shop> shops;
+//	@OneToMany(mappedBy = "addressDelivery")
+//	@JsonBackReference
+//	private List<Order> orders;
+//	
+//	@OneToMany(mappedBy = "adress")
+//	@JsonBackReference
+//	private List<Customer> customers;
+//	
+//	@OneToMany(mappedBy = "addressShop")
+//	@JsonBackReference
+//	private List<Shop> shops;
 
 	public int getId() {
 		return id;
@@ -86,30 +86,30 @@ public class Address {
 		this.detail = detail;
 	}
 
-	public List<Order> getOrders() {
-		return orders;
-	}
-
-	public void setOrders(List<Order> orders) {
-		this.orders = orders;
-	}
-
-	public List<Customer> getCustomers() {
-		return customers;
-	}
-
-	public void setCustomers(List<Customer> customers) {
-		this.customers = customers;
-	}
-
-	public List<Shop> getShops() {
-		return shops;
-	}
-
-	public void setShops(List<Shop> shops) {
-		this.shops = shops;
-	}
-	
+//	public List<Order> getOrders() {
+//		return orders;
+//	}
+//
+//	public void setOrders(List<Order> orders) {
+//		this.orders = orders;
+//	}
+//
+//	public List<Customer> getCustomers() {
+//		return customers;
+//	}
+//
+//	public void setCustomers(List<Customer> customers) {
+//		this.customers = customers;
+//	}
+//
+//	public List<Shop> getShops() {
+//		return shops;
+//	}
+//
+//	public void setShops(List<Shop> shops) {
+//		this.shops = shops;
+//	}
+//	
 	
 	
 }

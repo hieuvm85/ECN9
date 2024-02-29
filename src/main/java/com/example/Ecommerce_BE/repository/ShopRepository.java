@@ -8,5 +8,5 @@ import com.example.Ecommerce_BE.model.entity.Shop;
 
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Integer>{
-
+	boolean existsByNameShop(String nameShop);
 }

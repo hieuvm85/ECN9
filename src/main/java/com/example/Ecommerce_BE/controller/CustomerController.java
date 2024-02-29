@@ -69,7 +69,7 @@ public class CustomerController {
 
 		Optional<Roles> userRole= roleService.findByRoleName(ERole.ROLE_USER);
 		listRoles.add(userRole.get());
-
+		
 		
 		customer.setListRoles(listRoles);
 		customerService.saveOrUpdate(customer);
