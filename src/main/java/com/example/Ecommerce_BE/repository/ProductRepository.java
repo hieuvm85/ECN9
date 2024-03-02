@@ -11,4 +11,5 @@ import com.example.Ecommerce_BE.model.entity.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer>{
 	List<Product> findByCensorship(EStatusProduct censorship);
+	List<Product> findByCensorshipAndStatusSale(EStatusProduct censorship,boolean statusSale);
 }

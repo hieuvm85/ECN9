@@ -9,5 +9,5 @@ public interface ProductService {
 	Product saveOrUpdate(Product product);
 	Product getById(int id);
 	List<Product> findByCensorship(EStatusProduct censorship );
-	
+	List<Product> getAllProductSale();
 }

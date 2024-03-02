@@ -34,4 +34,10 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.getById(id);
 	}
 
+	@Override
+	public List<Product> getAllProductSale() {
+		// TODO Auto-generated method stub
+		return productRepository.findByCensorshipAndStatusSale(EStatusProduct.PASS, true);
+	}
+
 }

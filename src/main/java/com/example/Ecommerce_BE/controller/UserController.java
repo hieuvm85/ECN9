@@ -1,6 +1,7 @@
 package com.example.Ecommerce_BE.controller;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -27,14 +28,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
 import com.example.Ecommerce_BE.model.entity.ERole;
+import com.example.Ecommerce_BE.model.entity.Product;
 import com.example.Ecommerce_BE.model.entity.Roles;
 import com.example.Ecommerce_BE.model.entity.Users;
+import com.example.Ecommerce_BE.model.service.ProductService;
 import com.example.Ecommerce_BE.model.service.RoleService;
 import com.example.Ecommerce_BE.model.service.UserService;
 import com.example.Ecommerce_BE.payload.request.LoginRequest;
 import com.example.Ecommerce_BE.payload.request.SignupRequest;
 import com.example.Ecommerce_BE.payload.response.JwtRespone;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
+
+import com.example.Ecommerce_BE.payload.response.ProductResponse;
 import com.example.Ecommerce_BE.security.CustomerUserDetail;
 
 @RestController
@@ -52,7 +57,8 @@ public class UserController {
 	private RoleService roleService;
 	@Autowired
 	private PasswordEncoder encoder;
-	
+	@Autowired
+	private ProductService productService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest)
@@ -155,9 +161,19 @@ public class UserController {
 	
 	@GetMapping("/product/viewAll")
 	public ResponseEntity<?> viewAllProduct(){
+		List<Product> products = productService.getAllProductSale();
+		List<ProductResponse> productResponses = new ArrayList<>();
+		
+		for(Product product:products) {
+			String linkImage = product.getLinkImages().get(0);
+			productResponses.add(new ProductResponse(product.getId(),product.getTitle(), product.getRate(), 
+					product.getQuantitySold(), linkImage, product.getShop()));
+			
+		}
 		
 		
+//		products.sort(Comparator.comparingInt(Product::getQuantitySold).reversed());
 		
-		return null;
+		return ResponseEntity.ok(productResponses);
 	}
 }
