@@ -1,5 +1,8 @@
 package com.example.Ecommerce_BE.controller;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +27,9 @@ public class ModeratorController {
 	
 	@GetMapping("/view/product/waitconfim")
 	public ResponseEntity<?> viewAllProductWaitConfirm(){		
-		return ResponseEntity.ok(productService.findByCensorship(EStatusProduct.AWAITING_CENSORSHIP));
+		List<Product> products = productService.findByCensorship(EStatusProduct.AWAITING_CENSORSHIP);
+		products.sort((p1,p2)-> p1.getDateTimeCreated().compareTo(p2.getDateTimeCreated()));
+		return ResponseEntity.ok(products);
 	}
 	
 	

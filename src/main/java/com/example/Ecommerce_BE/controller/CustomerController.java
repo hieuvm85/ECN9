@@ -75,13 +75,12 @@ public class CustomerController {
 		
 		
 		listRoles.add(userRole.get());
-		
-		Wallet wallet = new Wallet();
-		wallet.setBalance(50000);
-		walletService.saveOrUpdate(wallet);
-		customer.setWallet(wallet);
 		customer.setListRoles(listRoles);
 		customerService.saveOrUpdate(customer);
+		Wallet wallet = new Wallet();
+		wallet.setBalance(0);
+		wallet.setCustomer(customer);
+		walletService.saveOrUpdate(wallet);
 		return ResponseEntity.ok(new MessageResponse("create account successfuly"));
 	}
 	@GetMapping("/get")
