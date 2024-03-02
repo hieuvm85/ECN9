@@ -1,5 +1,6 @@
 package com.example.Ecommerce_BE.model.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -34,6 +35,8 @@ public class Product {
 	private boolean statusSale;// true la ban false la khong ban
 	private String description;
 	private float rate;
+	private LocalDateTime dateTimeCreated;
+	private int quantitySold;
 	
 	@Enumerated(EnumType.STRING)
 	private EStatusProduct censorship; // co su chap thuan cua ban kiem duyet moderator
@@ -163,6 +166,22 @@ public class Product {
 
 	public void setProductDescriptionDetails(List<ProductDescriptionDetail> productDescriptionDetails) {
 		this.productDescriptionDetails = productDescriptionDetails;
+	}
+
+	public LocalDateTime getDateTimeCreated() {
+		return dateTimeCreated;
+	}
+
+	public void setDateTimeCreated(LocalDateTime dateTimeCreated) {
+		this.dateTimeCreated = dateTimeCreated;
+	}
+
+	public int getQuantitySold() {
+		return quantitySold;
+	}
+
+	public void setQuantitySold(int quantitySold) {
+		this.quantitySold = quantitySold;
 	}
 	
 	

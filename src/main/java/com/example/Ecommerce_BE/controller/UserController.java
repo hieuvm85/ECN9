@@ -18,9 +18,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
@@ -81,7 +83,7 @@ public class UserController {
 						Optional<Roles> adminRole=roleService.findByRoleName(ERole.ROLE_ADMIN);
 						listRoles.add(adminRole.get());
 					case "moderator":
-						Optional<Roles> moderatorRole=roleService.findByRoleName(ERole.ROLE_MODIRATOR);
+						Optional<Roles> moderatorRole=roleService.findByRoleName(ERole.ROLE_MODERATOR);
 						listRoles.add(moderatorRole.get());
 					case "user":
 						
@@ -148,9 +150,14 @@ public class UserController {
 		        // Xử lý các trường hợp khác
 		        e.printStackTrace();
 		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Internal server error."));
-		    }
-		
-		
+		    }	
 	}
 	
+	@GetMapping("/product/viewAll")
+	public ResponseEntity<?> viewAllProduct(){
+		
+		
+		
+		return null;
+	}
 }

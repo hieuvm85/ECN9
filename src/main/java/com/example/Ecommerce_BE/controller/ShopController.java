@@ -25,7 +25,8 @@ import com.example.Ecommerce_BE.model.service.CustomerService;
 import com.example.Ecommerce_BE.model.service.RoleService;
 import com.example.Ecommerce_BE.model.service.ShopService;
 import com.example.Ecommerce_BE.model.service.UserService;
-import com.example.Ecommerce_BE.payload.request.ShopRequest;
+import com.example.Ecommerce_BE.payload.request.CreateShopRequest;
+import com.example.Ecommerce_BE.payload.request.UpdateShopRequest;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 import com.example.Ecommerce_BE.repository.CustomerRepository;
 
@@ -50,7 +51,7 @@ public class ShopController {
 	
 	
 	@PostMapping("/create")
-	public ResponseEntity<?> createShop(HttpServletRequest request, @RequestBody ShopRequest shopRequest){
+	public ResponseEntity<?> createShop(HttpServletRequest request, @RequestBody CreateShopRequest shopRequest){
 		String strToken = request.getHeader("Authorization");
 		if (strToken != null && strToken.startsWith("Bearer ")) {
             // Lấy token từ header
@@ -83,6 +84,30 @@ public class ShopController {
             else {
 				return ResponseEntity.ok(new MessageResponse("shop already exists"));
 			}   
+        }
+		else {
+			return ResponseEntity.ok(new MessageResponse("bug Auth"));
+		}
+	}
+	
+	
+	@PostMapping("/update")
+	public ResponseEntity<?> updateShop(HttpServletRequest request, @RequestBody UpdateShopRequest shopRequest){
+		String strToken = request.getHeader("Authorization");
+		if (strToken != null && strToken.startsWith("Bearer ")) {
+            // Lấy token từ header
+            String token = strToken.substring(7);
+
+            // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+            String username = jwtTokenProvider.getUsernameByJWT(token);   
+
+            Customer customer = customerService.findCustomerByUsername(username);
+            // check shop exists
+           Shop shop = customer.getShop();
+           shop.setLinkImageAvatarShop(shopRequest.getLinkImageAvatarShop());
+           shop.setLinkImageShop(shopRequest.getLinkImageShop());
+           shopService.saveOrUpdate(shop);
+            return ResponseEntity.ok(shop); 
         }
 		else {
 			return ResponseEntity.ok(new MessageResponse("bug Auth"));

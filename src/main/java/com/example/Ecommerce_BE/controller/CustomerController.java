@@ -22,9 +22,11 @@ import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
 import com.example.Ecommerce_BE.model.entity.Customer;
 import com.example.Ecommerce_BE.model.entity.ERole;
 import com.example.Ecommerce_BE.model.entity.Roles;
+import com.example.Ecommerce_BE.model.entity.Wallet;
 import com.example.Ecommerce_BE.model.service.CustomerService;
 import com.example.Ecommerce_BE.model.service.RoleService;
 import com.example.Ecommerce_BE.model.service.UserService;
+import com.example.Ecommerce_BE.model.service.WalletService;
 import com.example.Ecommerce_BE.payload.request.SignupRequest;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
@@ -35,6 +37,8 @@ public class CustomerController {
 	private RoleService roleService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private WalletService walletService;
 	@Autowired
 	private PasswordEncoder encoder;
 	@Autowired
@@ -68,9 +72,14 @@ public class CustomerController {
 		List<Roles> listRoles = new ArrayList<>();
 
 		Optional<Roles> userRole= roleService.findByRoleName(ERole.ROLE_USER);
+		
+		
 		listRoles.add(userRole.get());
 		
-		
+		Wallet wallet = new Wallet();
+		wallet.setBalance(50000);
+		walletService.saveOrUpdate(wallet);
+		customer.setWallet(wallet);
 		customer.setListRoles(listRoles);
 		customerService.saveOrUpdate(customer);
 		return ResponseEntity.ok(new MessageResponse("create account successfuly"));

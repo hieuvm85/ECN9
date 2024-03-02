@@ -2,7 +2,7 @@ package com.example.Ecommerce_BE.payload.request;
 
 import com.example.Ecommerce_BE.model.entity.Address;
 
-public class ShopRequest {
+public class CreateShopRequest {
 	private String nameShop;
 	private Address addressShop;
 	public String getNameShop() {
