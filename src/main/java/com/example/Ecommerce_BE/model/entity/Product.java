@@ -31,6 +31,8 @@ public class Product {
 	
 	private String title;
 	private int quantity;
+	private int originalPrice;
+	private int sellingPrice;
 	private float weight;// kg
 	private boolean statusSale;// true la ban false la khong ban
 	private String description;
@@ -182,6 +184,22 @@ public class Product {
 
 	public void setQuantitySold(int quantitySold) {
 		this.quantitySold = quantitySold;
+	}
+
+	public int getOriginalPrice() {
+		return originalPrice;
+	}
+
+	public void setOriginalPrice(int originalPrice) {
+		this.originalPrice = originalPrice;
+	}
+
+	public int getSellingPrice() {
+		return sellingPrice;
+	}
+
+	public void setSellingPrice(int sellingPrice) {
+		this.sellingPrice = sellingPrice;
 	}
 	
 	

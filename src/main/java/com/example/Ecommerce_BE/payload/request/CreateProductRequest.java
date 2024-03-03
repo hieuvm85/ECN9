@@ -10,6 +10,8 @@ public class CreateProductRequest {
 	private String title;
 	private int quantity;
 	private float weight;// kg
+	private int originalPrice;
+	private int sellingPrice;
 	private String description;
 	private List<String> linkImages;
 	private List<ProductDetail> productDescriptionDetails;
@@ -50,6 +52,19 @@ public class CreateProductRequest {
 		this.productDescriptionDetails = productDescriptionDetails;
 	}
 	
+	public int getOriginalPrice() {
+		return originalPrice;
+	}
+	public void setOriginalPrice(int originalPrice) {
+		this.originalPrice = originalPrice;
+	}
+	public int getSellingPrice() {
+		return sellingPrice;
+	}
+	public void setSellingPrice(int sellingPrice) {
+		this.sellingPrice = sellingPrice;
+	}
+
 	public static class ProductDetail{
 		private String title;
 		private String description;

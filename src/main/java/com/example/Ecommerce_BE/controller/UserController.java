@@ -30,6 +30,7 @@ import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
 import com.example.Ecommerce_BE.model.entity.ERole;
 import com.example.Ecommerce_BE.model.entity.Product;
 import com.example.Ecommerce_BE.model.entity.Roles;
+import com.example.Ecommerce_BE.model.entity.Shop;
 import com.example.Ecommerce_BE.model.entity.Users;
 import com.example.Ecommerce_BE.model.service.ProductService;
 import com.example.Ecommerce_BE.model.service.RoleService;
@@ -167,7 +168,8 @@ public class UserController {
 		for(Product product:products) {
 			String linkImage = product.getLinkImages().get(0);
 			productResponses.add(new ProductResponse(product.getId(),product.getTitle(), product.getRate(), 
-					product.getQuantitySold(), linkImage, product.getShop()));
+					product.getQuantitySold(),product.getOriginalPrice(),product.getSellingPrice(),
+					linkImage, product.getShop()));
 			
 		}
 		

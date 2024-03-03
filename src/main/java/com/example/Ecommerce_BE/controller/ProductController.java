@@ -61,6 +61,8 @@ public class ProductController {
         Product product= new Product();
         product.setTitle(productRequest.getTitle());
         product.setQuantity(productRequest.getQuantity());
+        product.setOriginalPrice(productRequest.getOriginalPrice());
+        product.setSellingPrice(productRequest.getSellingPrice());
         product.setWeight(productRequest.getWeight());
         product.setDescription(productRequest.getDescription());
         product.setLinkImages(productRequest.getLinkImages());
