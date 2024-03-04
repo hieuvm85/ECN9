@@ -40,4 +40,16 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findByCensorshipAndStatusSale(EStatusProduct.PASS, true);
 	}
 
+	@Override
+	public List<Product> searchProductSellByTitleContain(String strSearch) {
+		// TODO Auto-generated method stub
+		return productRepository.findByTitleContainingIgnoreCaseAndStatusSaleAndCensorship(strSearch, true, EStatusProduct.PASS);
+	}
+
+	@Override
+	public Product getProductSellById(int id) {
+		// TODO Auto-generated method stub
+		return productRepository.findByIdAndStatusSaleAndCensorship(id, true, EStatusProduct.PASS);
+	}
+
 }

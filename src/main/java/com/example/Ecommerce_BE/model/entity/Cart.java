@@ -1,5 +1,7 @@
 package com.example.Ecommerce_BE.model.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,11 +27,13 @@ public class Cart {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	private LocalDateTime dateTimeCreated;
+	private int quantity;
 	//
 	private boolean statusBought;
 	
 	@ManyToOne
-	@JsonManagedReference
+	@JsonBackReference
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 	
@@ -42,6 +46,14 @@ public class Cart {
 	@JsonBackReference
 	@JoinColumn(name = "order_id")
 	private Order order;
+	
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
 
 	public int getId() {
 		return id;
@@ -81,6 +93,14 @@ public class Cart {
 
 	public void setOrder(Order order) {
 		this.order = order;
+	}
+
+	public LocalDateTime getDateTimeCreated() {
+		return dateTimeCreated;
+	}
+
+	public void setDateTimeCreated(LocalDateTime dateTimeCreated) {
+		this.dateTimeCreated = dateTimeCreated;
 	}
 	
 	

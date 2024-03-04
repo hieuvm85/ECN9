@@ -1,6 +1,7 @@
 package com.example.Ecommerce_BE.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
 import com.example.Ecommerce_BE.model.entity.Customer;
 import com.example.Ecommerce_BE.model.entity.ERole;
+import com.example.Ecommerce_BE.model.entity.Notification;
 import com.example.Ecommerce_BE.model.entity.Roles;
 import com.example.Ecommerce_BE.model.entity.Wallet;
 import com.example.Ecommerce_BE.model.service.CustomerService;
+import com.example.Ecommerce_BE.model.service.NotificationService;
 import com.example.Ecommerce_BE.model.service.RoleService;
 import com.example.Ecommerce_BE.model.service.UserService;
 import com.example.Ecommerce_BE.model.service.WalletService;
@@ -45,12 +48,13 @@ public class CustomerController {
 	private CustomerService customerService;
 	@Autowired
 	private JwtTokenProvider jwtTokenProvider;
-	
-	@GetMapping("/test")
-	public ResponseEntity<?> getCustomer()
-	{
-		return ResponseEntity.ok(new Customer());
-	}
+	@Autowired
+	private NotificationService notificationService;
+//	@GetMapping("/test")
+//	public ResponseEntity<?> getCustomer()
+//	{
+//		return ResponseEntity.ok(new Customer());
+//	}
 	@PostMapping("/create")
 	public ResponseEntity<?> createCustomer(@RequestBody SignupRequest signupRequest){
 		if(userService.existsByUserName(signupRequest.getUsername())) {
@@ -81,6 +85,13 @@ public class CustomerController {
 		wallet.setBalance(0);
 		wallet.setCustomer(customer);
 		walletService.saveOrUpdate(wallet);
+		Notification notification= new Notification();
+		notification.setCreated(LocalDateTime.now());
+		notification.setTitle("New member");
+		notification.setNotification("Welcome to our e-commerce site");
+		notification.setStatus(false);
+		notification.setCustomer(customer);
+		notificationService.saveOrUpdate(notification);
 		return ResponseEntity.ok(new MessageResponse("create account successfuly"));
 	}
 	@GetMapping("/get")

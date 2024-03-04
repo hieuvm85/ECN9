@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.example.Ecommerce_BE.model.entity.ProductDescriptionDetail;
 @Repository
 public interface ProductDescriptionDetailRepository extends JpaRepository<ProductDescriptionDetail, Integer>{
-
+	
 }

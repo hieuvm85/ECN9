@@ -174,8 +174,31 @@ public class UserController {
 		}
 		
 		
-//		products.sort(Comparator.comparingInt(Product::getQuantitySold).reversed());
+		productResponses.sort(Comparator.comparingInt(ProductResponse::getQuantitySold).reversed());
 		
 		return ResponseEntity.ok(productResponses);
+	}
+	@GetMapping("/product/search")
+	public ResponseEntity<?> searchProduct(@RequestParam("keywork") String keywork)
+	{
+		List<Product> products = productService.searchProductSellByTitleContain(keywork);
+		List<ProductResponse> productResponses = new ArrayList<>();
+		
+		for(Product product:products) {
+			String linkImage = product.getLinkImages().get(0);
+			productResponses.add(new ProductResponse(product.getId(),product.getTitle(), product.getRate(), 
+					product.getQuantitySold(),product.getOriginalPrice(),product.getSellingPrice(),
+					linkImage, product.getShop()));
+			
+		}
+		
+		
+		productResponses.sort(Comparator.comparingInt(ProductResponse::getQuantitySold).reversed());
+		return ResponseEntity.ok(productResponses);
+	}
+	@GetMapping("/product/viewdetail")
+	public ResponseEntity<?> viewProductDetail(@RequestParam("productId") int productId)
+	{
+		return ResponseEntity.ok(productService.getProductSellById(productId));
 	}
 }
