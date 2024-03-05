@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.example.Ecommerce_BE.payload.response.MessageResponse;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Data;
@@ -31,6 +33,7 @@ public class Order { // mot order chi chua nhung san pham cua cung mot shop
 	private int totalMoneyItem;
 	private int totalMonneyShip;
 	private int amount;
+	private String message;
 	
 	@Enumerated(EnumType.STRING)
 	private EPaymentOption paymentOption;
@@ -39,22 +42,27 @@ public class Order { // mot order chi chua nhung san pham cua cung mot shop
 	private EStatusOrder statusOrder;
 	
 	@OneToMany(mappedBy = "order")
-	@JsonManagedReference
+	@JsonBackReference
 	private List<Cart> carts;
 	
 	@ManyToOne
-	@JsonManagedReference
+	@JsonBackReference
 	@JoinColumn(name = "address_id")
 	private Address addressDelivery;
 	
 	@ManyToOne
-	@JsonManagedReference
+	@JsonBackReference
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
+	
+	@ManyToOne
+	@JsonBackReference
+	@JoinColumn(name = "shop_id")
+	private Shop shop;
 
-	@OneToOne(mappedBy = "order")
-	@JsonManagedReference
-	private FeedBack feedBack;
+	@OneToMany(mappedBy = "order")
+	@JsonBackReference
+	private List<FeedBack> feedBacks;
 
 	public int getId() {
 		return id;
@@ -136,12 +144,30 @@ public class Order { // mot order chi chua nhung san pham cua cung mot shop
 		this.customer = customer;
 	}
 
-	public FeedBack getFeedBack() {
-		return feedBack;
+
+
+	public List<FeedBack> getFeedBacks() {
+		return feedBacks;
 	}
 
-	public void setFeedBack(FeedBack feedBack) {
-		this.feedBack = feedBack;
+	public void setFeedBacks(List<FeedBack> feedBacks) {
+		this.feedBacks = feedBacks;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Shop getShop() {
+		return shop;
+	}
+
+	public void setShop(Shop shop) {
+		this.shop = shop;
 	}
 	
 	

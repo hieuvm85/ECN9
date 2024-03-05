@@ -80,6 +80,19 @@ public class Notification {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+	public Notification() {
+		super();
+	}
+
+	public Notification(String title, String notification, Customer customer) {
+		super();
+		this.title = title;
+		this.notification = notification;
+		this.created = LocalDateTime.now();
+		this.status = false;
+		this.customer = customer;
+	}
 	
 	
 }

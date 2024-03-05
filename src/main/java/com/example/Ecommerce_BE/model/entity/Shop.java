@@ -50,6 +50,9 @@ public class Shop {
 	@JsonBackReference
 	List<Product> products;
 
+	@OneToMany(mappedBy = "shop")
+	@JsonBackReference
+	List<Order> orders;
 	public int getId() {
 		return id;
 	}
@@ -112,6 +115,14 @@ public class Shop {
 
 	public void setProducts(List<Product> products) {
 		this.products = products;
+	}
+
+	public List<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
 	}
 	
 	
