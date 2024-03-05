@@ -12,4 +12,5 @@ public interface ProductService {
 	List<Product> findByCensorship(EStatusProduct censorship );
 	List<Product> getAllProductSale();
 	List<Product> searchProductSellByTitleContain(String strSearch);
+	List<Product> findByShopIdAndCensorship(int shopId, EStatusProduct censorship);
 }

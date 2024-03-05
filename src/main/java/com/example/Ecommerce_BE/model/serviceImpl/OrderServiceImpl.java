@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Ecommerce_BE.model.entity.Cart;
 import com.example.Ecommerce_BE.model.entity.EPaymentOption;
+import com.example.Ecommerce_BE.model.entity.EStatusOrder;
 import com.example.Ecommerce_BE.model.entity.Notification;
 import com.example.Ecommerce_BE.model.entity.Order;
 import com.example.Ecommerce_BE.model.entity.Product;
@@ -86,6 +87,28 @@ public class OrderServiceImpl implements OrderService{
 			return false;
 		}
 		return true;	
+	}
+
+
+	@Override
+	public Order getById(int id) {
+		// TODO Auto-generated method stub
+		return orderRepository.getById(id);
+	}
+
+
+
+	@Override
+	public List<Order> getByCustomerAndStatusOrder(int idCus, EStatusOrder eStatusOrder) {
+		// TODO Auto-generated method stub
+		return orderRepository.findByCustomerIdAndStatusOrder(idCus, eStatusOrder);
+	}
+
+
+	@Override
+	public List<Order> getByShopAndStatusOrder(int idShop, EStatusOrder eStatusOrder) {
+		// TODO Auto-generated method stub
+		return orderRepository.findByShopIdAndStatusOrder(idShop, eStatusOrder);
 	}
 
 }

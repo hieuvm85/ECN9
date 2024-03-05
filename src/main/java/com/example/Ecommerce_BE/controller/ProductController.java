@@ -178,4 +178,15 @@ public class ProductController {
         	return ResponseEntity.ok(new MessageResponse("Set quantity fail"));
         }
 	}
+	
+	@GetMapping("/view/status")
+	public ResponseEntity<?> viewProductByStatus(HttpServletRequest request,@RequestParam("statusProduct") EStatusProduct statusProduct){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        
+        return ResponseEntity.ok(productService.findByShopIdAndCensorship(customer.getShop().getId(), statusProduct));
+	}
 }

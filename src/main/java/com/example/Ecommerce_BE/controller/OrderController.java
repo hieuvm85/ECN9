@@ -11,9 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
 
@@ -23,8 +26,10 @@ import com.example.Ecommerce_BE.model.entity.Cart;
 import com.example.Ecommerce_BE.model.entity.Customer;
 import com.example.Ecommerce_BE.model.entity.EPaymentOption;
 import com.example.Ecommerce_BE.model.entity.EStatusOrder;
+import com.example.Ecommerce_BE.model.entity.Notification;
 import com.example.Ecommerce_BE.model.entity.Order;
 import com.example.Ecommerce_BE.model.entity.Product;
+import com.example.Ecommerce_BE.model.entity.Wallet;
 import com.example.Ecommerce_BE.model.service.AddressService;
 import com.example.Ecommerce_BE.model.service.CartService;
 import com.example.Ecommerce_BE.model.service.CustomerService;
@@ -32,6 +37,7 @@ import com.example.Ecommerce_BE.model.service.NotificationService;
 import com.example.Ecommerce_BE.model.service.OrderService;
 import com.example.Ecommerce_BE.model.service.ProductService;
 import com.example.Ecommerce_BE.model.service.ShopService;
+import com.example.Ecommerce_BE.model.service.WalletService;
 import com.example.Ecommerce_BE.payload.response.CartResponse;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 import com.example.Ecommerce_BE.payload.response.OrderPreviewResponse;
@@ -56,7 +62,8 @@ public class OrderController {
 	private AddressService  addressService;
 	@Autowired
 	private OrderService orderService;
-	
+	@Autowired
+	private WalletService walletService;
 	
 	
 	@PostMapping("/preview")
@@ -184,4 +191,134 @@ public class OrderController {
         else
         	return ResponseEntity.ok(new MessageResponse("Error: Order fail"));       
 	}
+	
+	
+	@PutMapping("/confirm")
+	public ResponseEntity<?> confirmOrder(HttpServletRequest request,@RequestParam("orderId") int orderId){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        
+        Order order = orderService.getById(orderId);
+        if(order.getShop().getCustomer().getId()==customer.getId() & order.getStatusOrder()==EStatusOrder.WAITE_CONFIRM) {
+        	order.setStatusOrder(EStatusOrder.PREPARE_GOODS);
+        	orderService.saveOrUpdate(order);
+        	Wallet wallet = customer.getWallet();
+        	int tax= (int) order.getTotalMoneyItem()*2/100;
+        	wallet.setBalance(wallet.getBalance()-  tax);
+        	walletService.saveOrUpdate(wallet);
+        	notificationService.saveOrUpdate(new Notification("Ví","Phí dịch vụ đơn hàng: -"+tax+", mã đơn hàng: "+orderId,customer ));
+        	return ResponseEntity.ok(new MessageResponse("Success: CONFIRM successfully"));
+        }
+        else
+        	return ResponseEntity.ok(new MessageResponse("Error: CONFIRM fail"));        
+	}
+	@PutMapping("/cancel")
+	public ResponseEntity<?> cancelled(HttpServletRequest request,@RequestParam("orderId") int orderId){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        
+        Order order = orderService.getById(orderId);
+        
+        
+        if((customer.getId()==order.getCustomer().getId() || order.getShop().getCustomer().getId()==customer.getId()) 
+        		&(order.getStatusOrder()==EStatusOrder.WAITE_CONFIRM || order.getStatusOrder()==EStatusOrder.PREPARE_GOODS)) {
+        	order.setStatusOrder(EStatusOrder.CANCELLED);
+        	orderService.saveOrUpdate(order);
+        	return ResponseEntity.ok(new MessageResponse("Success: CANCEL successfully"));
+        }
+        else
+        	return ResponseEntity.ok(new MessageResponse("Error: CANCEL fail"));
+        
+	}
+	@PutMapping("/prepare")
+	public ResponseEntity<?> prepareOrder(HttpServletRequest request,@RequestParam("orderId") int orderId){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        
+        Order order = orderService.getById(orderId);
+        if(order.getShop().getCustomer().getId()==customer.getId() & order.getStatusOrder()==EStatusOrder.PREPARE_GOODS) {
+        	order.setStatusOrder(EStatusOrder.DELIVERING);
+        	orderService.saveOrUpdate(order);
+        	return ResponseEntity.ok(new MessageResponse("Success: PREPARE successfully"));
+        }
+        else
+        	return ResponseEntity.ok(new MessageResponse("Error: PREPARE fail"));       
+	}
+	@PutMapping("/delevered")
+	public ResponseEntity<?> deleveredOrder(HttpServletRequest request,@RequestParam("orderId") int orderId){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        
+        Order order = orderService.getById(orderId);
+        if( order.getStatusOrder()==EStatusOrder.DELIVERING) {
+        	order.setStatusOrder(EStatusOrder.DELEVERED);
+        	orderService.saveOrUpdate(order);
+        	if(true) {
+        		Wallet wallet= order.getShop().getCustomer().getWallet();
+        		wallet.setBalance(wallet.getBalance()+ order.getTotalMoneyItem());
+        		walletService.saveOrUpdate(wallet);
+        		notificationService.saveOrUpdate(new Notification("Ví",
+        				"Thanh toán tiền đơn hàng: +"+order.getTotalMoneyItem()+", mã đơn hàng: "+ order.getId(),order.getShop().getCustomer()));
+        		notificationService.saveOrUpdate(new Notification("Đơn hàng",
+        				"Giao hàng thành công, mã đơn hàng: "+ order.getId(),order.getShop().getCustomer()));
+        		notificationService.saveOrUpdate(new Notification("Đơn hàng",
+        				"Giao hàng thành công, mã đơn hàng: "+ order.getId(),order.getCustomer()));
+        	}
+        	return ResponseEntity.ok(new MessageResponse("Success: DELEVERED successfully"));
+        }
+        else
+        	return ResponseEntity.ok(new MessageResponse("Error: DELEVERED fail"));       
+	}
+	
+	@PutMapping("/return")
+	public ResponseEntity<?> returnOrder(HttpServletRequest request,@RequestParam("orderId") int orderId){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        
+        Order order = orderService.getById(orderId);
+        if(customer.getId()==order.getCustomer().getId() & order.getStatusOrder()==EStatusOrder.DELIVERING) 
+        {
+        	order.setStatusOrder(EStatusOrder.RETURN_GOODS);
+        	order.setStatusOrder(EStatusOrder.DELIVERING);
+        	orderService.saveOrUpdate(order);
+        	return ResponseEntity.ok(new MessageResponse("Success: RETURN_GOODS successfully"));
+        }
+        else
+        	return ResponseEntity.ok(new MessageResponse("Error: RETURN_GOODS fail"));       
+	}
+	
+	@GetMapping("/shop/view/order/status")
+	public ResponseEntity<?> shopViewOrderConfirm(HttpServletRequest request,@RequestParam("statusOrder") EStatusOrder statusOrder){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        return ResponseEntity.ok(orderService.getByShopAndStatusOrder(customer.getShop().getId(),statusOrder));
+	}
+	@GetMapping("/customer/view/order/status")
+	public ResponseEntity<?> customerViewOrderConfirm(HttpServletRequest request,@RequestParam("statusOrder") EStatusOrder statusOrder){
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        return ResponseEntity.ok(orderService.getByCustomerAndStatusOrder(customer.getId(),statusOrder));
+	}
+	
 }

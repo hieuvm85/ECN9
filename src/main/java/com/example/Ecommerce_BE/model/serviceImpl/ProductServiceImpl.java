@@ -52,4 +52,10 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findByIdAndStatusSaleAndCensorship(id, true, EStatusProduct.PASS);
 	}
 
+	@Override
+	public List<Product> findByShopIdAndCensorship(int shopId, EStatusProduct censorship) {
+		// TODO Auto-generated method stub
+		return productRepository.findByShopIdAndCensorship(shopId, censorship);
+	}
+
 }
