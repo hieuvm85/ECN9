@@ -92,7 +92,7 @@ public class CustomerController {
 		notification.setStatus(false);
 		notification.setCustomer(customer);
 		notificationService.saveOrUpdate(notification);
-		return ResponseEntity.ok(new MessageResponse("create account successfuly"));
+		return ResponseEntity.ok(new MessageResponse("Success: Create account successfuly"));
 	}
 	@GetMapping("/get")
 	@PreAuthorize("hasRole('USER')")
@@ -108,7 +108,7 @@ public class CustomerController {
             return ResponseEntity.ok(customerService.findCustomerByUsername(username));
         }
 		else {
-			return ResponseEntity.ok(new MessageResponse("bug"));
+			return ResponseEntity.ok(new MessageResponse("Error: Bug"));
 		}
 	}
 	

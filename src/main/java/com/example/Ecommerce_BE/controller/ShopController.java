@@ -82,11 +82,11 @@ public class ShopController {
                 return ResponseEntity.ok(shop);
             } 
             else {
-				return ResponseEntity.ok(new MessageResponse("shop already exists"));
+				return ResponseEntity.ok(new MessageResponse("Error: Shop already exists"));
 			}   
         }
 		else {
-			return ResponseEntity.ok(new MessageResponse("bug Auth"));
+			return ResponseEntity.ok(new MessageResponse("Error: Bug Auth"));
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class ShopController {
             return ResponseEntity.ok(shop); 
         }
 		else {
-			return ResponseEntity.ok(new MessageResponse("bug Auth"));
+			return ResponseEntity.ok(new MessageResponse("Error: Bug Auth"));
 		}
 	}
 }

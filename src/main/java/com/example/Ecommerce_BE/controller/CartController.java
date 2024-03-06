@@ -56,7 +56,7 @@ public class CartController {
         // check khong duoc dat hang cua chinh minh
         if(!product.isStatusSale() || product.getCensorship()!=EStatusProduct.PASS 
         		|| product.getShop().getCustomer().getId()==customer.getId())
-        	return ResponseEntity.ok(new MessageResponse("Add to cart fail"));
+        	return ResponseEntity.ok(new MessageResponse("Error: Add to cart fail"));
         // kiem tra cart da ton tai hay chua neu co thi cap nhat them so luong
         Cart cart = cartService.checkCartContain(customer.getId(), productId);
         if(cart!=null)
@@ -74,7 +74,7 @@ public class CartController {
 	        cart.setProduct(product);	        
         }
         cartService.saveOrUpdate(cart);
-        return ResponseEntity.ok(new MessageResponse("Add to cart successfully"));
+        return ResponseEntity.ok(new MessageResponse("Success: Add to cart successfully"));
 	}
 	
 	@GetMapping("/viewMyCart")
@@ -111,7 +111,7 @@ public class CartController {
         	return ResponseEntity.ok(new CartResponse(cartService.saveOrUpdate(cart)) );
         }
         else
-        	return ResponseEntity.ok(new MessageResponse("Set quantity fail"));
+        	return ResponseEntity.ok(new MessageResponse("Error: Set quantity fail"));
 	}
 	
 	
@@ -127,9 +127,9 @@ public class CartController {
         Cart cart = cartService.getById(cartId);
         if(cart.getCustomer().getId()== customer.getId()) {
         	cartService.deleteCart(cartId);
-        	return ResponseEntity.ok(new MessageResponse("Delete successfull"));
+        	return ResponseEntity.ok(new MessageResponse("Success: Delete successfull"));
         }
         else
-        	return ResponseEntity.ok(new MessageResponse("Delete fail"));
+        	return ResponseEntity.ok(new MessageResponse("Error: Delete fail"));
 	}
 }

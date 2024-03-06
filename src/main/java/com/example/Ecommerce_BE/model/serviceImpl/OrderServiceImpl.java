@@ -65,6 +65,7 @@ public class OrderServiceImpl implements OrderService{
 						productRepository.save(product);
 					}
 					cart.setStatusBought(true);
+					cart.setOrder(order);
 					cartRepository.save(cart);
 				}
 				// thong bao cho nguoi dung

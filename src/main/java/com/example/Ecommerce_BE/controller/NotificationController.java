@@ -64,7 +64,7 @@ public class NotificationController {
 				notificationService.saveOrUpdate(notification);
 			}
 		}
-		return ResponseEntity.ok(new MessageResponse("set read notifications successfully"));
+		return ResponseEntity.ok(new MessageResponse("Success: Set read notifications successfully"));
 	}
 	
 }

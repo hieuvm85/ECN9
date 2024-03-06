@@ -40,14 +40,14 @@ public class ModeratorController {
 		product.setCensorship(EStatusProduct.PASS);
 		productService.saveOrUpdate(product);
 		
-		return ResponseEntity.ok(new MessageResponse("confirm successfully"));
+		return ResponseEntity.ok(new MessageResponse("Success: Confirm successfully"));
 	}
 	@PutMapping("/reject")
 	public ResponseEntity<?> rejectProduct(@RequestParam("productId") int productId){
 		Product product = productService.getById(productId);
 		product.setCensorship(EStatusProduct.REJECT);
 		productService.saveOrUpdate(product);
-		return ResponseEntity.ok(new MessageResponse("reject successfully"));
+		return ResponseEntity.ok(new MessageResponse("Success: Reject successfully"));
 	}
 	
 	

@@ -115,15 +115,15 @@ public class ProductController {
         product.setStatusSale(true);
         
         if(product.getShop().getId() != customer.getShop().getId())       
-        	return ResponseEntity.ok(new MessageResponse("you have no right to change"));
+        	return ResponseEntity.ok(new MessageResponse("Error: You have no right to change"));
         else if(customer.getWallet().getBalance() <= 50000)
-        	return ResponseEntity.ok(new MessageResponse("You do not have enough money for the service fee"));
+        	return ResponseEntity.ok(new MessageResponse("Error: You do not have enough money for the service fee"));
         else if(product.getQuantity()<=0)
-        	return ResponseEntity.ok(new MessageResponse("Quantity is not enough"));     	
+        	return ResponseEntity.ok(new MessageResponse("Error: Quantity is not enough"));     	
         else
         {
         	productService.saveOrUpdate(product);
-    		return ResponseEntity.ok(new MessageResponse("Set on sale successfully"));
+    		return ResponseEntity.ok(new MessageResponse("Success: Set on sale successfully"));
         }
 	}
 	
@@ -141,11 +141,11 @@ public class ProductController {
         if(product.getShop().getId() == customer.getShop().getId())
         {
         	productService.saveOrUpdate(product);
-        	return ResponseEntity.ok(new MessageResponse("Set off sale successfully"));
+        	return ResponseEntity.ok(new MessageResponse("Success: Set off sale successfully"));
         }
         else
         {
-        	return ResponseEntity.ok(new MessageResponse("Set off sale fail"));
+        	return ResponseEntity.ok(new MessageResponse("Error: Set off sale fail"));
         }
 	}
 	
@@ -166,16 +166,16 @@ public class ProductController {
         	product.setStatusSale(false);
         }
         else
-        	return ResponseEntity.ok(new MessageResponse("quantity invalid"));
+        	return ResponseEntity.ok(new MessageResponse("Error: Quantity invalid"));
         
         if(product.getShop().getId() == customer.getShop().getId())
         {
         	productService.saveOrUpdate(product);
-        	return ResponseEntity.ok(new MessageResponse("Set quantity successfully"));
+        	return ResponseEntity.ok(new MessageResponse("Success: Set quantity successfully"));
         }
         else
         {
-        	return ResponseEntity.ok(new MessageResponse("Set quantity fail"));
+        	return ResponseEntity.ok(new MessageResponse("Erro: Set quantity fail"));
         }
 	}
 	

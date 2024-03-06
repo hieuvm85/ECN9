@@ -190,9 +190,7 @@ public class UserController {
 					product.getQuantitySold(),product.getOriginalPrice(),product.getSellingPrice(),
 					linkImage, product.getShop()));
 			
-		}
-		
-		
+		}		
 		productResponses.sort(Comparator.comparingInt(ProductResponse::getQuantitySold).reversed());
 		return ResponseEntity.ok(productResponses);
 	}

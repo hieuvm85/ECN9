@@ -26,6 +26,7 @@ import com.example.Ecommerce_BE.model.entity.Cart;
 import com.example.Ecommerce_BE.model.entity.Customer;
 import com.example.Ecommerce_BE.model.entity.EPaymentOption;
 import com.example.Ecommerce_BE.model.entity.EStatusOrder;
+import com.example.Ecommerce_BE.model.entity.EStatusProduct;
 import com.example.Ecommerce_BE.model.entity.Notification;
 import com.example.Ecommerce_BE.model.entity.Order;
 import com.example.Ecommerce_BE.model.entity.Product;
@@ -82,40 +83,7 @@ public class OrderController {
         	List<CartResponse> carts = shopToCartsMap.getOrDefault(shopId, new ArrayList<>());
         	carts.add(cartResponse);
         	shopToCartsMap.put(shopId, carts);
-        }
-        
-        
-        
-//        
-//        
-//   
-//        List<Order> orders = new ArrayList<>();
-//        for (Map.Entry<Integer, List<Cart>> entry : shopToCartsMap.entrySet()) {
-//            int shopId = entry.getKey();
-//            List<Cart> carts = entry.getValue();
-//            Order order = new Order();
-//            // set cac thuoc tinh cho tung order
-//            order.setCreated(LocalDateTime.now());
-//            
-//            int totalMoneyItem = 0;
-//            for(Cart cart :carts) {
-//            	totalMoneyItem += cart.getQuantity()*cart.getProduct().getSellingPrice();
-//            }
-//            
-//            order.setTotalMoneyItem(totalMoneyItem);
-//            order.setTotalMonneyShip(50000);
-//            order.setAmount(totalMoneyItem+50000);
-//            order.setPaymentOption(EPaymentOption.PAY_CASH);
-//            order.setStatusOrder(EStatusOrder.WAITE_CONFIRM);
-//            order.setCarts(carts);
-//            order.setAddressDelivery(customer.getAdress());
-//            order.setCustomer(customer);
-//            order.setShop(customer.getShop());
-//            
-//            
-//            orders.add(order);
-//        }
-        
+        }    
         
        List<OrderPreviewResponse> orders = new ArrayList<>();
       for (Map.Entry<Integer, List<CartResponse>> entry : shopToCartsMap.entrySet()) {
@@ -171,8 +139,23 @@ public class OrderController {
         	order.setStatusOrder(EStatusOrder.WAITE_CONFIRM);
         	List<Cart> carts = new ArrayList<>();
         	for(CartResponse cartResponse:   orderPreviewResponse.getCarts()) {
-        		Cart cart= cartService.getById(cartResponse.getId());
-        		carts.add(cart);
+        		
+        		if(cartResponse.getId()==0)
+        		{
+        			Cart cart= new Cart();
+        	        cart.setQuantity(cartResponse.getQuantity());
+        	        cart.setStatusBought(false);
+        	        cart.setDateTimeCreated(LocalDateTime.now());	
+        	        cart.setCustomer(customer);      
+        	        cart.setProduct(productService.getById(cartResponse.getProduct().getId()));
+        	        cartService.saveOrUpdate(cart);
+        	        carts.add(cart);
+        		}
+        		else
+        		{
+        			Cart cart= cartService.getById(cartResponse.getId());
+        			carts.add(cart);
+        		}
         	}
         	order.setCarts(carts);
         	
@@ -319,6 +302,58 @@ public class OrderController {
         String username = jwtTokenProvider.getUsernameByJWT(token);   
         Customer customer = customerService.findCustomerByUsername(username);
         return ResponseEntity.ok(orderService.getByCustomerAndStatusOrder(customer.getId(),statusOrder));
+	}
+	
+	@GetMapping("/previewNow")
+	public ResponseEntity<?> addCart(HttpServletRequest request,@RequestParam("productId") int productId,@RequestParam("quantity") int quantity )
+	{
+		String strToken = request.getHeader("Authorization");
+        String token = strToken.substring(7);
+        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+        String username = jwtTokenProvider.getUsernameByJWT(token);   
+        Customer customer = customerService.findCustomerByUsername(username);
+        Product product = productService.getById(productId);
+        // check khong duoc dat hang cua chinh minh
+        if(!product.isStatusSale() || product.getCensorship()!=EStatusProduct.PASS 
+        		|| product.getShop().getCustomer().getId()==customer.getId())
+        	return ResponseEntity.ok(new MessageResponse("Error: Add to cart fail"));
+        Cart cartx = cartService.checkCartContain(customer.getId(), productId);
+	        cartx=new Cart();
+	        cartx.setQuantity(quantity);
+	        cartx.setStatusBought(false);
+	        cartx.setDateTimeCreated(LocalDateTime.now());	
+	        cartx.setCustomer(customer);      
+	        cartx.setProduct(product);	
+	        
+	        CartResponse cart = new CartResponse(cartx);
+	        
+	        List<OrderPreviewResponse> orders = new ArrayList<>();
+	        OrderPreviewResponse order = new OrderPreviewResponse();
+	            // set cac thuoc tinh cho tung order
+	            
+	            int totalMoneyItem = 0;
+		          	Product product1 = productService.getById(cart.getProduct().getId());
+		          	if(product1.getQuantity()>= cart.getQuantity())
+		          		totalMoneyItem += cart.getQuantity()*cart.getProduct().getSellingPrice();
+		          	else
+		          	{
+		          		return ResponseEntity.ok(new ConsumesRequestCondition("The product"+product1.getTitle()+"is out of stock"));
+		          	}
+	            
+	            order.setAddressDelivery(customer.getAdress());
+	            order.setTotalMoneyItem(totalMoneyItem);
+	            order.setTotalMonneyShip(50000);
+	            order.setAmount(totalMoneyItem+50000);
+	            order.setPaymentOption(EPaymentOption.PAY_CASH);
+	            
+	            List<CartResponse> carts = new ArrayList<>();
+	            carts.add(cart);
+	            order.setCarts(carts);
+	            order.setAddressDelivery(customer.getAdress());
+	            orders.add(order);
+	        
+
+        return ResponseEntity.ok(orders);
 	}
 	
 }

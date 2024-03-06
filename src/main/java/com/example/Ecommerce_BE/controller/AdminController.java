@@ -62,7 +62,7 @@ public class AdminController {
 				
 		user.setListRoles(listRoles);
 		userService.saveOrUpdate(user);
-		return ResponseEntity.ok( new MessageResponse("create successfully"));
+		return ResponseEntity.ok( new MessageResponse("Success: Create successfully"));
 	}
 	
 	@PostMapping("/create/admin")
@@ -91,6 +91,6 @@ public class AdminController {
 				
 		user.setListRoles(listRoles);
 		userService.saveOrUpdate(user);
-		return ResponseEntity.ok( new MessageResponse("create successfully"));
+		return ResponseEntity.ok( new MessageResponse("Success: Create successfully"));
 	}
 }
