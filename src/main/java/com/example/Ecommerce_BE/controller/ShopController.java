@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -113,4 +114,26 @@ public class ShopController {
 			return ResponseEntity.ok(new MessageResponse("Error: Bug Auth"));
 		}
 	}
+	
+	@GetMapping("/get")
+	public ResponseEntity<?> getShop(HttpServletRequest request){
+		String strToken = request.getHeader("Authorization");
+		if (strToken != null && strToken.startsWith("Bearer ")) {
+            // Lấy token từ header
+            String token = strToken.substring(7);
+
+            // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+            String username = jwtTokenProvider.getUsernameByJWT(token);   
+
+            Customer customer = customerService.findCustomerByUsername(username);
+            // check shop exists
+           
+            return ResponseEntity.ok(customer.getShop()); 
+        }
+		else {
+			return ResponseEntity.ok(new MessageResponse("Error: Bug Auth"));
+		}
+	}
+	
+	
 }

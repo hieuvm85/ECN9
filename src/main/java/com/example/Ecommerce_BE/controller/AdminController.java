@@ -7,14 +7,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
 import com.example.Ecommerce_BE.model.entity.ERole;
 import com.example.Ecommerce_BE.model.entity.Roles;
 import com.example.Ecommerce_BE.model.entity.Users;
@@ -27,10 +25,7 @@ import com.example.Ecommerce_BE.payload.response.MessageResponse;
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	@Autowired
-	private JwtTokenProvider tokenProvider;
+
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -79,7 +74,6 @@ public class AdminController {
 		user.setUsername(signupRequest.getUsername());
 		user.setPassword(encoder.encode(signupRequest.getPassword()));
 		user.setEmail(signupRequest.getEmail());
-		List<String> strRoles= signupRequest.getListRoles();
 		List<Roles> listRoles = new ArrayList<>();
 		// set role
 		Optional<Roles> userRole= roleService.findByRoleName(ERole.ROLE_USER);
