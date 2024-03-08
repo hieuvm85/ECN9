@@ -10,4 +10,5 @@ public interface CartService {
 	Cart checkCartContain(int idCus,int idProduct);
 	List<Cart> viewMyCart(int idCus);
 	Cart getById(int id);
+	List<Cart> getCartToFeedback(int idCus);
 }

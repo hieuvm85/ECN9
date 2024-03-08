@@ -1,5 +1,6 @@
 package com.example.Ecommerce_BE.model.serviceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,4 +46,12 @@ public class CartServiceImpl implements CartService{
 		// TODO Auto-generated method stub
 		return cartRepository.getById(id);
 	}
+
+	@Override
+	public List<Cart> getCartToFeedback(int idCus) {
+		// TODO Auto-generated method stub
+		LocalDateTime deadline = LocalDateTime.now();
+		return cartRepository.findByCustomerIdAndStatusBoughtAndDateTimeCreatedAfter(idCus, true,deadline.minusDays(5));
+	}
+	
 }

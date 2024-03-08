@@ -47,6 +47,9 @@ public class Cart {
 	@JoinColumn(name = "order_id")
 	private Order order;
 	
+	@OneToOne(mappedBy = "cart")
+	@JsonBackReference
+	private FeedBack feedBack;
 	public int getQuantity() {
 		return quantity;
 	}
@@ -101,6 +104,14 @@ public class Cart {
 
 	public void setDateTimeCreated(LocalDateTime dateTimeCreated) {
 		this.dateTimeCreated = dateTimeCreated;
+	}
+
+	public FeedBack getFeedBack() {
+		return feedBack;
+	}
+
+	public void setFeedBack(FeedBack feedBack) {
+		this.feedBack = feedBack;
 	}
 	
 	

@@ -1,5 +1,6 @@
 package com.example.Ecommerce_BE.model.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -30,6 +31,7 @@ public class FeedBack {
 	
 	private String comment;
 	private int star;
+	private LocalDateTime created;
 	
 	@ElementCollection
 	@CollectionTable(name = "link_mages_feedback")
@@ -45,10 +47,10 @@ public class FeedBack {
 	@JoinColumn(name = "product_id")
 	private Product product;
 	
-	@ManyToOne
+	@OneToOne
 	@JsonBackReference
-	@JoinColumn(name = "order_id")
-	private Order order;
+	@JoinColumn(name = "cart_id")
+	private Cart cart ;
 
 	public int getId() {
 		return id;
@@ -98,13 +100,22 @@ public class FeedBack {
 		this.product = product;
 	}
 
-	public Order getOrder() {
-		return order;
+	public Cart getCart() {
+		return cart;
 	}
 
-	public void setOrder(Order order) {
-		this.order = order;
+	public void setCart(Cart cart) {
+		this.cart = cart;
+	}
+
+	public LocalDateTime getCreated() {
+		return created;
+	}
+
+	public void setCreated(LocalDateTime created) {
+		this.created = created;
 	}
 	
+
 	
 }

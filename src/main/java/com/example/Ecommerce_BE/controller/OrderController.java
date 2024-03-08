@@ -248,6 +248,10 @@ public class OrderController {
         if( order.getStatusOrder()==EStatusOrder.DELIVERING) {
         	order.setStatusOrder(EStatusOrder.DELEVERED);
         	orderService.saveOrUpdate(order);
+        	for(Cart cart: order.getCarts()) {
+        		cart.setDateTimeCreated(LocalDateTime.now());
+        		cartService.saveOrUpdate(cart);
+        	}
         	if(true) {
         		Wallet wallet= order.getShop().getCustomer().getWallet();
         		wallet.setBalance(wallet.getBalance()+ order.getTotalMoneyItem());

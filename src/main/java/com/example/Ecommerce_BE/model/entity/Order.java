@@ -60,10 +60,6 @@ public class Order { // mot order chi chua nhung san pham cua cung mot shop
 	@JoinColumn(name = "shop_id")
 	private Shop shop;
 
-	@OneToMany(mappedBy = "order")
-	@JsonBackReference
-	private List<FeedBack> feedBacks;
-
 	public int getId() {
 		return id;
 	}
@@ -146,13 +142,6 @@ public class Order { // mot order chi chua nhung san pham cua cung mot shop
 
 
 
-	public List<FeedBack> getFeedBacks() {
-		return feedBacks;
-	}
-
-	public void setFeedBacks(List<FeedBack> feedBacks) {
-		this.feedBacks = feedBacks;
-	}
 
 	public String getMessage() {
 		return message;

@@ -1,5 +1,6 @@
 package com.example.Ecommerce_BE.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,5 @@ import com.example.Ecommerce_BE.model.entity.Cart;
 public interface CartRepository extends JpaRepository<Cart, Integer> {
 	Cart findByCustomerIdAndProductIdAndStatusBought(int customerId, int productId, boolean statusBought);
 	List<Cart> findByCustomerIdAndStatusBought(int customerId, boolean statusBought);
+	List<Cart> findByCustomerIdAndStatusBoughtAndDateTimeCreatedAfter(int idCus,boolean statusBought,LocalDateTime created);
 }

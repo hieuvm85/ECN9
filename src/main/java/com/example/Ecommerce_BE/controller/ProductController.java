@@ -74,19 +74,20 @@ public class ProductController {
         product.setQuantitySold(0);
         product.setDateTimeCreated(LocalDateTime.now());
         
-        List<ProductDescriptionDetail> productDescriptionDetails = new ArrayList<>();       
+
+        
+        productService.saveOrUpdate(product);
+        List<ProductDescriptionDetail> productDescriptionDetails= new ArrayList<>();
         for(CreateProductRequest.ProductDetail productDetail: productRequest.getProductDescriptionDetails())
         {
         	ProductDescriptionDetail productDescriptionDetail =  new ProductDescriptionDetail();
         	productDescriptionDetail.setTitle(productDetail.getTitle());
         	productDescriptionDetail.setDescription(productDetail.getDescription());
-        	
+        	productDescriptionDetail.setProduct(product);
         	productDescriptionDetailService.saveOrUpdate(productDescriptionDetail);
-        	
         	productDescriptionDetails.add(productDescriptionDetail);
         }
         product.setProductDescriptionDetails(productDescriptionDetails);
-        
         productService.saveOrUpdate(product);
         return ResponseEntity.ok(product);
 	}
