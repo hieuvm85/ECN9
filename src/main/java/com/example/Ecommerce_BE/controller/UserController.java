@@ -28,12 +28,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Ecommerce_BE.jwt.JwtTokenProvider;
 import com.example.Ecommerce_BE.model.entity.ERole;
+import com.example.Ecommerce_BE.model.entity.EStatusProduct;
+import com.example.Ecommerce_BE.model.entity.EStatusShop;
 import com.example.Ecommerce_BE.model.entity.Product;
 import com.example.Ecommerce_BE.model.entity.Roles;
 import com.example.Ecommerce_BE.model.entity.Shop;
 import com.example.Ecommerce_BE.model.entity.Users;
 import com.example.Ecommerce_BE.model.service.ProductService;
 import com.example.Ecommerce_BE.model.service.RoleService;
+import com.example.Ecommerce_BE.model.service.ShopService;
 import com.example.Ecommerce_BE.model.service.UserService;
 import com.example.Ecommerce_BE.payload.request.LoginRequest;
 import com.example.Ecommerce_BE.payload.request.SignupRequest;
@@ -41,6 +44,7 @@ import com.example.Ecommerce_BE.payload.response.JwtRespone;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 import com.example.Ecommerce_BE.payload.response.ProductResponse;
+import com.example.Ecommerce_BE.payload.response.ShopResponse;
 import com.example.Ecommerce_BE.security.CustomerUserDetail;
 
 @RestController
@@ -60,6 +64,8 @@ public class UserController {
 	private PasswordEncoder encoder;
 	@Autowired
 	private ProductService productService;
+	@Autowired
+	private ShopService shopService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest)
@@ -199,4 +205,31 @@ public class UserController {
 	{
 		return ResponseEntity.ok(productService.getProductSellById(productId));
 	}
+	
+	@GetMapping("/view/shop/bycustomer")
+	public  ResponseEntity<?> viewShopByCustomer(@RequestParam("shopId") int shopId){
+		Shop shop = shopService.getShopById(shopId);
+		if(shop.getStatus()==EStatusShop.ON_SALE) { 
+//			List<Product>  products = productService.findByShopIdAndCensorship(shopId, EStatusProduct.PASS);	
+			List<Product>  products = shop.getProducts();
+			List<ProductResponse> productResponses = new ArrayList<>();		
+			for(Product product:products) {
+				if(product.isStatusSale()==true & product.getCensorship() == EStatusProduct.PASS)
+				{
+				String linkImage = product.getLinkImages().get(0);
+				productResponses.add(new ProductResponse(product.getId(),product.getTitle(), product.getRate(), 
+						product.getQuantitySold(),product.getOriginalPrice(),product.getSellingPrice(),
+						linkImage, null));
+				}
+			}
+			ShopResponse shopResponse = new ShopResponse();
+			shopResponse.setShop(shopId, shop.getNameShop(), shop.getLinkImageAvatarShop(), shop.getLinkImageShop());
+			shopResponse.setProductResponses(productResponses);
+
+			return ResponseEntity.ok(shopResponse);
+		}
+		else
+			return ResponseEntity.ok( new MessageResponse("Error: Shop does not exist"));
+	}
+	
 }

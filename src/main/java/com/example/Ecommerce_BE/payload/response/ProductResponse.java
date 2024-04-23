@@ -15,7 +15,7 @@ public class ProductResponse {
 	private int originalPrice;
 	private int sellingPrice;
 	private String linkImage;	
-	private Shop shop;
+	private Shop shop;	
 	
 //	ProductResponse(int id,String title,float rate,int quantitySold,String linkImage,Shop shop ){
 //		

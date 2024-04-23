@@ -27,4 +27,10 @@ public class ShopServiceImpl implements ShopService{
 		return shopRepository.existsByNameShop(nameShop);
 	}
 
+	@Override
+	public Shop getShopById(int idShop) {
+		// TODO Auto-generated method stub
+		return shopRepository.getById(idShop);
+	}
+
 }
