@@ -19,7 +19,6 @@ import com.example.Ecommerce_BE.model.service.ProductService;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/moderator")
 @PreAuthorize("hasRole('MODERATOR')")
 public class ModeratorController {

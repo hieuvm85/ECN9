@@ -45,7 +45,6 @@ import com.example.Ecommerce_BE.payload.response.MessageResponse;
 import com.example.Ecommerce_BE.payload.response.OrderPreviewResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/order")
 @PreAuthorize("hasRole('USER')")
 public class OrderController {

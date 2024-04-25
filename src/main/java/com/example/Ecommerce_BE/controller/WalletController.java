@@ -20,7 +20,6 @@ import com.example.Ecommerce_BE.model.service.WalletService;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/wallet")
 @PreAuthorize("hasRole('USER')")
 public class WalletController {

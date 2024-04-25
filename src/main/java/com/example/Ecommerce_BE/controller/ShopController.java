@@ -33,7 +33,6 @@ import com.example.Ecommerce_BE.payload.response.MessageResponse;
 import com.example.Ecommerce_BE.repository.CustomerRepository;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/shop")
 @PreAuthorize("hasRole('USER')")
 public class ShopController {

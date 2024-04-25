@@ -35,7 +35,6 @@ import com.example.Ecommerce_BE.payload.response.CartResponse;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/feedback")
 @PreAuthorize("hasRole('USER')")
 public class FeedbackController {

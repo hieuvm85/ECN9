@@ -48,7 +48,6 @@ import com.example.Ecommerce_BE.payload.response.ShopResponse;
 import com.example.Ecommerce_BE.security.CustomerUserDetail;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/auth")
 public class UserController {
 

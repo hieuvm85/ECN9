@@ -23,7 +23,6 @@ import com.example.Ecommerce_BE.model.service.NotificationService;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/notification")
 @PreAuthorize("hasRole('USER')")
 public class NotificationController {

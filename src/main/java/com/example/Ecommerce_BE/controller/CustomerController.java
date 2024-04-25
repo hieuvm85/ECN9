@@ -35,7 +35,6 @@ import com.example.Ecommerce_BE.payload.request.SignupRequest;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/auth/customer")
 public class CustomerController {
 	@Autowired
