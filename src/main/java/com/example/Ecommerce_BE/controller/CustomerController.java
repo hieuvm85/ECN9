@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,7 @@ import com.example.Ecommerce_BE.payload.request.SignupRequest;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/auth/customer")
 public class CustomerController {
 	@Autowired
@@ -55,6 +57,8 @@ public class CustomerController {
 //	{
 //		return ResponseEntity.ok(new Customer());
 //	}
+	
+	
 	@PostMapping("/create")
 	public ResponseEntity<?> createCustomer(@RequestBody SignupRequest signupRequest){
 		if(userService.existsByUserName(signupRequest.getUsername())) {

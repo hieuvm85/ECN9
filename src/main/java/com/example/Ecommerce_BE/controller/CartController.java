@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,7 @@ import com.example.Ecommerce_BE.payload.response.CartResponse;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/cart")
 @PreAuthorize("hasRole('USER')")
 public class CartController {
@@ -44,6 +46,8 @@ public class CartController {
 	@Autowired
 	private CartService cartService;
 	
+	
+
 	@PostMapping("/add")
 	public ResponseEntity<?> addCart(HttpServletRequest request,@RequestParam("productId") int productId,@RequestParam("quantity") int quantity )
 	{
@@ -76,7 +80,7 @@ public class CartController {
         cartService.saveOrUpdate(cart);
         return ResponseEntity.ok(new MessageResponse("Success: Add to cart successfully"));
 	}
-	
+
 	@GetMapping("/viewMyCart")
 	public ResponseEntity<?> viewMyCart(HttpServletRequest request){
 		String strToken = request.getHeader("Authorization");
@@ -95,7 +99,6 @@ public class CartController {
         return ResponseEntity.ok(cartResponses);
         
 	}
-	
 	@PutMapping("/set/quantity")
 	public ResponseEntity<?> quantityCart(HttpServletRequest request,@RequestParam("cartId") int cartId,@RequestParam("quantity") int quantity)
 	{
@@ -116,7 +119,7 @@ public class CartController {
 	
 	
 	
-	
+
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteCart(HttpServletRequest request,@RequestParam("cartId") int cartId){
 		String strToken = request.getHeader("Authorization");

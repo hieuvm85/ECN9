@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import com.example.Ecommerce_BE.payload.request.SignupRequest;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
@@ -32,7 +34,6 @@ public class AdminController {
 	private RoleService roleService;
 	@Autowired
 	private PasswordEncoder encoder;
-	
 	
 	@PostMapping("/create/moderator")
 	public ResponseEntity<?> createModerator(@RequestBody SignupRequest signupRequest)
@@ -59,7 +60,6 @@ public class AdminController {
 		userService.saveOrUpdate(user);
 		return ResponseEntity.ok( new MessageResponse("Success: Create successfully"));
 	}
-	
 	@PostMapping("/create/admin")
 	public ResponseEntity<?> createAdmin(@RequestBody SignupRequest signupRequest)
 	{
