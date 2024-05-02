@@ -56,4 +56,9 @@ public class WalletController {
         walletService.saveOrUpdate(wallet);
         return ResponseEntity.ok(new MessageResponse("Success: Top up money success"));
 	}
+	@GetMapping("/checkBalance")
+	public ResponseEntity<?> checkPay(@RequestParam("idCus") int idCus ){  
+        Customer customer = customerService.findCustomerById(idCus);
+        return ResponseEntity.ok(customer.getWallet());
+	}
 }

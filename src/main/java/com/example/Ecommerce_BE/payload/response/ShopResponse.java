@@ -38,6 +38,8 @@ public class ShopResponse {
 	}
 	private Shop shop = new Shop();
 	private List<ProductResponse> productResponses;
+	
+	
 	public Shop getShop() {
 		return shop;
 	}

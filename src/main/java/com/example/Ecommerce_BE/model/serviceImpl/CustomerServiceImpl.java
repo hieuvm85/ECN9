@@ -26,4 +26,10 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerRepository.findCustomerByUsername(username);
 	}
 
+	@Override
+	public Customer findCustomerById(int idCus) {
+		// TODO Auto-generated method stub
+		return customerRepository.getById(idCus);
+	}
+
 }

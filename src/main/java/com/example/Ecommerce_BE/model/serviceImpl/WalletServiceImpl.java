@@ -18,5 +18,4 @@ public class WalletServiceImpl implements WalletService{
 		// TODO Auto-generated method stub
 		return walletRepository.save(wallet);
 	}
-	
 }

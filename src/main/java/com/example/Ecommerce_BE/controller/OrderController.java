@@ -31,6 +31,7 @@ import com.example.Ecommerce_BE.model.entity.EStatusProduct;
 import com.example.Ecommerce_BE.model.entity.Notification;
 import com.example.Ecommerce_BE.model.entity.Order;
 import com.example.Ecommerce_BE.model.entity.Product;
+import com.example.Ecommerce_BE.model.entity.Shop;
 import com.example.Ecommerce_BE.model.entity.Wallet;
 import com.example.Ecommerce_BE.model.service.AddressService;
 import com.example.Ecommerce_BE.model.service.CartService;
@@ -87,7 +88,7 @@ public class OrderController {
         }    
         
        List<OrderPreviewResponse> orders = new ArrayList<>();
-      for (Map.Entry<Integer, List<CartResponse>> entry : shopToCartsMap.entrySet()) {
+       for (Map.Entry<Integer, List<CartResponse>> entry : shopToCartsMap.entrySet()) {
           int shopId = entry.getKey();
           List<CartResponse> carts = entry.getValue();
           OrderPreviewResponse order = new OrderPreviewResponse();
@@ -110,6 +111,12 @@ public class OrderController {
           order.setPaymentOption(EPaymentOption.PAY_CASH);
           order.setCarts(carts);
           order.setAddressDelivery(customer.getAdress());
+          Shop shop = shopService.getShopById(shopId);
+          
+          order.getShop().setAll(shopId, shop.getNameShop(), shop.getLinkImageAvatarShop());
+          order.getShop().getAddress().setAll(shop.getAddressShop().getId(), shop.getAddressShop().getCity(),
+        		  shop.getAddressShop().getDistrict(), shop.getAddressShop().getWard(),  shop.getAddressShop().getDetail());
+          
           orders.add(order);
       }
 		
@@ -322,7 +329,7 @@ public class OrderController {
         if(!product.isStatusSale() || product.getCensorship()!=EStatusProduct.PASS 
         		|| product.getShop().getCustomer().getId()==customer.getId())
         	return ResponseEntity.ok(new MessageResponse("Error: Add to cart fail"));
-        Cart cartx = cartService.checkCartContain(customer.getId(), productId);
+        	Cart cartx = cartService.checkCartContain(customer.getId(), productId);
 	        cartx=new Cart();
 	        cartx.setQuantity(quantity);
 	        cartx.setStatusBought(false);
@@ -355,6 +362,12 @@ public class OrderController {
 	            carts.add(cart);
 	            order.setCarts(carts);
 	            order.setAddressDelivery(customer.getAdress());
+	            
+	            Shop shop = product.getShop();
+	            
+	            order.getShop().setAll(shop.getId(), shop.getNameShop(), shop.getLinkImageAvatarShop());
+	            order.getShop().getAddress().setAll(shop.getAddressShop().getId(), shop.getAddressShop().getCity(),
+	          		  shop.getAddressShop().getDistrict(), shop.getAddressShop().getWard(),  shop.getAddressShop().getDetail());
 	            orders.add(order);
 	        
 
