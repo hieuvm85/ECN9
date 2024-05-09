@@ -73,7 +73,7 @@ public class OrderController {
 	public ResponseEntity<?> orderPreview(HttpServletRequest request,@RequestBody List<CartResponse> cartResponses){
 		String strToken = request.getHeader("Authorization");
         String token = strToken.substring(7);
-        // Sử dụng phương thức để lấy username từ token (giả sử bạn đã có JwtTokenUtil)
+
         String username = jwtTokenProvider.getUsernameByJWT(token);   
         Customer customer = customerService.findCustomerByUsername(username);
         

@@ -1,5 +1,7 @@
 package com.example.Ecommerce_BE.model.serviceImpl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,6 +112,21 @@ public class OrderServiceImpl implements OrderService{
 	public List<Order> getByShopAndStatusOrder(int idShop, EStatusOrder eStatusOrder) {
 		// TODO Auto-generated method stub
 		return orderRepository.findByShopIdAndStatusOrder(idShop, eStatusOrder);
+	}
+
+
+	@Override
+	public List<Order> getByEstatusOrderAndCreatedBetween(EStatusOrder eStatusOrder, LocalDateTime startDate,
+			LocalDateTime endDate) {
+		// TODO Auto-generated method stub
+		return orderRepository.findByStatusOrderAndCreatedBetween(eStatusOrder, startDate, endDate);
+	}
+
+
+	@Override
+	public List<Order> getByCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+		// TODO Auto-generated method stub
+		return orderRepository.findByCreatedBetween( startDate, endDate);
 	}
 
 }
