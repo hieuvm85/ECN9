@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,7 +54,7 @@ public class StatisticsController {
 	@Autowired
 	OrderService orderService;
 	
-	@GetMapping("/interest")
+	@PostMapping("/interest")
 	public ResponseEntity<?> getInterest(@RequestBody StatisticsRequest statisticsRequest){
 		List<LocalDate[]> dates = statisticsRequest.splitDates();
 		DataChartResponse dataChartResponse = new DataChartResponse();
@@ -107,7 +108,7 @@ public class StatisticsController {
 	}
 	
 	
-	@GetMapping("/transportFee")
+	@PostMapping("/transportFee")
 	public ResponseEntity<?> getTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
 	    Transport transport = calculateTransportFee(timeZoneRequest);
 	    transport.setStartDate(timeZoneRequest.getStartDate());
@@ -117,7 +118,7 @@ public class StatisticsController {
 	
 	
 	
-	@GetMapping("/export/excel/transportFee")
+	@PostMapping("/export/excel/transportFee")
 	public ResponseEntity<?> getExportTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
 	    Transport transport = calculateTransportFee(timeZoneRequest);
 
@@ -229,7 +230,7 @@ public class StatisticsController {
 	}
 	
 	///báo cáo top 10 sản phẩm bán chạy
-	@GetMapping("/top/products")
+	@PostMapping("/top/products")
 	public ResponseEntity<?> getTopProducts(@RequestBody StatisticsRequest timeZoneRequest){
 		LocalDateTime startDateTime = timeZoneRequest.getStartDate().atStartOfDay();
 	    LocalDateTime endDateTime = timeZoneRequest.getEndDate().atTime(LocalTime.MAX);
@@ -267,7 +268,7 @@ public class StatisticsController {
 		return ResponseEntity.ok( dataChartResponse );
 	}
 	/// báo cáo top shop bán được nhiều đơn hàng 
-	@GetMapping("/top/shops")
+	@PostMapping("/top/shops")
 	public ResponseEntity<?> getTopShops(@RequestBody StatisticsRequest timeZoneRequest){
 		LocalDateTime startDateTime = timeZoneRequest.getStartDate().atStartOfDay();
 	    LocalDateTime endDateTime = timeZoneRequest.getEndDate().atTime(LocalTime.MAX);
@@ -305,7 +306,7 @@ public class StatisticsController {
 		return ResponseEntity.ok( dataChartResponse );
 	}
 	 
-	@GetMapping("/order")
+	@PostMapping("/order")
 	public ResponseEntity<?> getTopShops(){
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime truncatedDateTime = currentTime.truncatedTo(ChronoUnit.MINUTES);
