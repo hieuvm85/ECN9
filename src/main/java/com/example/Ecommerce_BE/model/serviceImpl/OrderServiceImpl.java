@@ -129,4 +129,11 @@ public class OrderServiceImpl implements OrderService{
 		return orderRepository.findByCreatedBetween( startDate, endDate);
 	}
 
+
+	@Override
+	public int countByCreatedBetween(LocalDateTime startDate, LocalDateTime endDate) {
+		// TODO Auto-generated method stub
+		return orderRepository.countByCreatedBetween(startDate,endDate);
+	}
+
 }

@@ -16,4 +16,5 @@ public interface OrderService {
 	List<Order> getByShopAndStatusOrder(int idShop,EStatusOrder eStatusOrder);
 	List<Order> getByEstatusOrderAndCreatedBetween(EStatusOrder eStatusOrder, LocalDateTime startDate,LocalDateTime endDate);
 	List<Order>  getByCreatedBetween( LocalDateTime startDate, LocalDateTime endDate);
+	int countByCreatedBetween( LocalDateTime startDate, LocalDateTime endDate);
 }

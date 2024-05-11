@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -302,6 +303,34 @@ public class StatisticsController {
 	    dataChartResponse.setLabel(label);
 	    dataChartResponse.setValue(data);
 		return ResponseEntity.ok( dataChartResponse );
+	}
+	 
+	@GetMapping("/order")
+	public ResponseEntity<?> getTopShops(){
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime truncatedDateTime = currentTime.truncatedTo(ChronoUnit.MINUTES);
+        // Xác định phút hiện tại
+        int currentMinute = truncatedDateTime.getMinute();   
+        // Tính toán phút cần điều chỉnh để chia hết cho 5
+        int adjustedMinute = (currentMinute / 5) * 5;      
+        // Tạo một đối tượng LocalDateTime mới với số phút đã điều chỉnh
+        LocalDateTime nearestFiveMinuteDateTime = truncatedDateTime.withMinute(adjustedMinute);
+        List<LocalTime> label =  new ArrayList<>();
+        List<Integer> data =  new ArrayList<>();
+        nearestFiveMinuteDateTime= nearestFiveMinuteDateTime.minusMinutes(45);
+        for(int i=0;i<9;i++) {
+        	data.add(orderService.countByCreatedBetween(nearestFiveMinuteDateTime, nearestFiveMinuteDateTime.plusMinutes(5)));
+        	nearestFiveMinuteDateTime = nearestFiveMinuteDateTime.plusMinutes(5);
+        	label.add(nearestFiveMinuteDateTime.toLocalTime());
+        }
+    	data.add(orderService.countByCreatedBetween(nearestFiveMinuteDateTime, currentTime));
+    	label.add(currentTime.toLocalTime());
+    	DataChartResponse dataChart =new DataChartResponse();
+    	dataChart.setLabel(label);
+    	dataChart.setValue(data);
+        
+
+		return ResponseEntity.ok( dataChart );
 	}
 	
 	
