@@ -67,7 +67,8 @@ public class FeedbackController {
         List<Cart> carts= cartService.getCartToFeedback(customer.getId());
         List<CartResponse> cartResponses= new ArrayList<>();
         for(Cart cart:carts) {
-        	cartResponses.add(new CartResponse(cart));
+        	if(cart.getFeedBack()== null)
+        		cartResponses.add(new CartResponse(cart));
         }
         
         return ResponseEntity.ok(cartResponses);
