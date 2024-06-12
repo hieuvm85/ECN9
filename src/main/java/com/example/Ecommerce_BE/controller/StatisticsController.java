@@ -1,7 +1,10 @@
 package com.example.Ecommerce_BE.controller;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,14 +16,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +58,11 @@ import com.example.Ecommerce_BE.payload.request.TimeZoneRequest;
 import com.example.Ecommerce_BE.payload.response.DataChartResponse;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 import com.example.Ecommerce_BE.payload.response.Transport;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.ElementListener;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 @RestController
 @RequestMapping("/api/statistics")
@@ -228,7 +248,180 @@ public class StatisticsController {
 	                .body(null);
 	    }
 	}
+	// dung cai nay
+	@PostMapping("/export/pdf/transportFee")
+	public ResponseEntity<?> getExportPdfTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
+	    Transport transport = calculateTransportFee(timeZoneRequest);
+	    
+	    try {
+		    ClassPathResource pdfTemplate = new ClassPathResource("templateE.pdf");
+	        InputStream pdfInputStream = pdfTemplate.getInputStream();
+	        PDDocument document = PDDocument.load(pdfInputStream);
 	
+	        // Lấy toàn bộ nội dung của file PDF
+	        PDFTextStripper pdfStripper = new PDFTextStripper();
+	        String text = pdfStripper.getText(document);
+	        
+	        
+	        LocalDate date = LocalDate.now(); 
+	        
+	        text = text.replace("{{1}}",Integer.toString(date.getDayOfMonth()));
+	        text = text.replace("{{2}}",Integer.toString(date.getMonthValue()));
+	        text = text.replace("{{3}}",Integer.toString(date.getYear()));
+	        text = text.replace("{{4}}",timeZoneRequest.getStartDate().toString());
+	        text = text.replace("{{5}}",timeZoneRequest.getEndDate().toString() );
+	        text = text.replace("{{6}}",Integer.toString(transport.getTotalPayCashOrder()));
+	        text = text.replace("{{7}}",Integer.toString(transport.getTotalMoneyItemPayCashOrder()));
+	        text = text.replace("{{8}}",Integer.toString(transport.getTotalPayWalletOrder()));
+	        text = text.replace("{{9}}",Integer.toString(transport.getTotalMoneyItemPayWalletOrder()));
+	        text = text.replace("{{10}}",Integer.toString(transport.getTotalCancelOrder()));
+	        text = text.replace("{{11}}",Integer.toString(transport.getTotalMoneyShipCancelOrder()));
+	        text = text.replace("{{12}}",Integer.toString(transport.getTotalMoneyShipPayCashOrder()));
+	        text = text.replace("{{13}}",Integer.toString(transport.getTotalMoneyShipPayWalletOrder()));
+	        text = text.replace("{{14}}",Integer.toString(transport.getAmountReceivable()));
+	         
+	        
+	        System.out.println(text);
+	        
+
+	        
+	        
+	        // Lưu file PDF đã chỉnh sửa vào bộ nhớ tạm thời
+	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	        document.save(byteArrayOutputStream);
+	        byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+	        
+	        
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_PDF);
+	        headers.setContentDispositionFormData("attachment", "exported_report.pdf");
+	        headers.setContentLength(pdfBytes.length);
+	        
+	        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+	        
+//	        ByteArrayOutputStream baos = createPDF(text);
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_PDF);
+//            headers.setContentDispositionFormData("filename", "generated.pdf");
+//            return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
+	        
+
+	    }catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+	}
+	private ByteArrayOutputStream createPDF(String text) throws IOException {
+		text = text.replace("\n", "").replace("\r", "");
+        try (PDDocument document = new PDDocument();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(100, 700); 
+            contentStream.showText(text);
+            contentStream.endText();
+            contentStream.close();
+
+            document.save(baos);
+            return baos;
+        }
+    }
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	  @PostMapping("/export/docx/transportFee")
+	    public ResponseEntity<?> getExportDocxTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
+	        Transport transport = calculateTransportFee(timeZoneRequest);
+
+	        try {
+	            // Load template Word document
+	            FileInputStream fis = new FileInputStream(new File("src/main/resources/templateE.docx"));
+	            XWPFDocument doc = new XWPFDocument(fis);
+
+	            // Replace placeholders with actual values
+	            replacePlaceholder(doc, "{{1}}", Integer.toString(LocalDate.now().getDayOfMonth()));
+	            replacePlaceholder(doc, "{{2}}", Integer.toString(LocalDate.now().getMonthValue()));
+	            replacePlaceholder(doc, "{{3}}", Integer.toString(LocalDate.now().getYear()));
+	            replacePlaceholder(doc, "{{4}}", timeZoneRequest.getStartDate().toString());
+	            replacePlaceholder(doc, "{{5}}", timeZoneRequest.getEndDate().toString());
+	            replacePlaceholder(doc, "{{6}}", Integer.toString(transport.getTotalPayCashOrder()));
+	            replacePlaceholder(doc, "{{7}}", Integer.toString(transport.getTotalMoneyItemPayCashOrder()));
+	            replacePlaceholder(doc, "{{8}}", Integer.toString(transport.getTotalPayWalletOrder()));
+	            replacePlaceholder(doc, "{{9}}", Integer.toString(transport.getTotalMoneyItemPayWalletOrder()));
+	            replacePlaceholder(doc, "{{10}}", Integer.toString(transport.getTotalCancelOrder()));
+	            replacePlaceholder(doc, "{{11}}", Integer.toString(transport.getTotalMoneyShipCancelOrder()));
+	            replacePlaceholder(doc, "{{12}}", Integer.toString(transport.getTotalMoneyShipPayCashOrder()));
+	            replacePlaceholder(doc, "{{13}}", Integer.toString(transport.getTotalMoneyShipPayWalletOrder()));
+	            replacePlaceholder(doc, "{{14}}", Integer.toString(transport.getAmountReceivable()));
+
+	            // Save modified document to temporary memory
+	            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	            doc.write(byteArrayOutputStream);
+
+	            // Close input stream
+	            fis.close();
+
+	            // Prepare response headers
+	            HttpHeaders headers = new HttpHeaders();
+	            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+	            headers.setContentDispositionFormData("attachment", "exported_report.docx");
+	            headers.setContentLength(byteArrayOutputStream.size());
+
+	            // Return the modified Word document
+	            return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	        }
+	    }
+
+	    private static void replacePlaceholder(XWPFDocument doc, String placeholder, String newValue) {
+	        for (XWPFParagraph p : doc.getParagraphs()) {
+	            for (XWPFRun r : p.getRuns()) {
+	                String text = r.getText(0);
+	                if (text != null && text.contains(placeholder)) {
+	                    text = text.replace(placeholder, newValue);
+	                    r.setText(text, 0);
+	                }
+	            }
+	        }
+	    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private void setField(PDAcroForm acroForm, String string, String string2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 	///báo cáo top 10 sản phẩm bán chạy
 	@PostMapping("/top/products")
 	public ResponseEntity<?> getTopProducts(@RequestBody StatisticsRequest timeZoneRequest){
@@ -333,6 +526,6 @@ public class StatisticsController {
 
 		return ResponseEntity.ok( dataChart );
 	}
-	
+
 	
 }
