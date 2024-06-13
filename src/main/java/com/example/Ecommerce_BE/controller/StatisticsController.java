@@ -3,11 +3,13 @@ package com.example.Ecommerce_BE.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,9 +25,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -58,11 +58,28 @@ import com.example.Ecommerce_BE.payload.request.TimeZoneRequest;
 import com.example.Ecommerce_BE.payload.response.DataChartResponse;
 import com.example.Ecommerce_BE.payload.response.MessageResponse;
 import com.example.Ecommerce_BE.payload.response.Transport;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.ElementListener;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDictionary;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfName;
+import com.itextpdf.kernel.pdf.PdfObject;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfStream;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.forms.PdfAcroForm;
+import com.itextpdf.forms.fields.PdfFormField;
+import com.itextpdf.kernel.*;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
 
 @RestController
 @RequestMapping("/api/statistics")
@@ -137,289 +154,214 @@ public class StatisticsController {
 	}
 	
 	
-	
-	@PostMapping("/export/excel/transportFee")
-	public ResponseEntity<?> getExportTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
-	    Transport transport = calculateTransportFee(timeZoneRequest);
 
-	    try {
-	        // Tạo workbook mới
-	        Workbook workbook = new XSSFWorkbook();
-	        Sheet sheet = workbook.createSheet("Báo cáo thanh toán bên vận chuyển");
-
-	        // Tiêu đề
-	        Row titleRow = sheet.createRow(0);
-	        Cell titleCell = titleRow.createCell(0);
-	        titleCell.setCellValue("Báo cáo thanh toán bên vận chuyển");
-
-	        // Ngày bắt đầu và kết thúc
-	        Row dateRow = sheet.createRow(1);
-	        Cell startDateCell = dateRow.createCell(0);
-	        startDateCell.setCellValue("Ngày bắt đầu:");
-	        Cell endDateCell = dateRow.createCell(1);
-	        endDateCell.setCellValue(timeZoneRequest.getStartDate().toString());
-	        Cell endDateCell_1 = dateRow.createCell(2);
-	        endDateCell.setCellValue("Ngày kết thúc:");
-	        Cell endDateCell_2 = dateRow.createCell(3);
-	        endDateCell.setCellValue(timeZoneRequest.getEndDate().toString());
-
-	        // Dữ liệu
-	        int rowNum = 3;
-	        Row dataRow;
-	        Cell dataCell;
-
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng số đơn hàng thanh toán bằng tiền mặt:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalPayCashOrder());
-	        
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng tiền mặt hàng các đơn hàng thanh toán bằng tiền mặt:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalMoneyItemPayCashOrder());
-
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng số đơn hàng thanh toán bằng ví điện tử:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalPayWalletOrder());
-	        
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng tiền mặt hàng các đơn hàng thanh toán bằng ví điện tử:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalMoneyItemPayWalletOrder());
-
-	        // Tiếp tục với các thành phần khác...
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng số đơn hàng hủy:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalCancelOrder());
-
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng tiền vận chuyển của các đơn hàng đã hủy:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalMoneyShipCancelOrder());
-
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng tiền vận chuyển của các đơn hàng thanh toán bằng tiền mặt:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalMoneyShipPayCashOrder());
-
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng tiền vận chuyển của các đơn hàng thanh toán bằng ví điện tử:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getTotalMoneyShipPayWalletOrder());
-
-	        dataRow = sheet.createRow(rowNum++);
-	        dataCell = dataRow.createCell(0);
-	        dataCell.setCellValue("Tổng tiền phải thu:");
-	        dataCell = dataRow.createCell(1);
-	        dataCell.setCellValue(transport.getAmountReceivable());
-
-	        // Ký tên giám đốc
-	        Row directorRow = sheet.createRow(rowNum++);
-	        Cell directorCell = directorRow.createCell(0);
-	        directorCell.setCellValue("Chữ ký giám đốc");
-
-	        // Ghi workbook vào ByteArrayOutputStream
-	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	        workbook.write(outputStream);
-	        workbook.close();
-
-	        // Trả về file Excel cho client
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.add("Content-Disposition", "attachment; filename=transport_fee_report.xlsx");
-	        return ResponseEntity
-	                .ok()
-	                .headers(headers)
-	                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-	                .body(new ByteArrayResource(outputStream.toByteArray()));
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return ResponseEntity
-	                .badRequest()
-	                .body(null);
-	    }
-	}
-	// dung cai nay
-	@PostMapping("/export/pdf/transportFee")
-	public ResponseEntity<?> getExportPdfTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
-	    Transport transport = calculateTransportFee(timeZoneRequest);
-	    
-	    try {
-		    ClassPathResource pdfTemplate = new ClassPathResource("templateE.pdf");
-	        InputStream pdfInputStream = pdfTemplate.getInputStream();
-	        PDDocument document = PDDocument.load(pdfInputStream);
-	
-	        // Lấy toàn bộ nội dung của file PDF
-	        PDFTextStripper pdfStripper = new PDFTextStripper();
-	        String text = pdfStripper.getText(document);
-	        
-	        
-	        LocalDate date = LocalDate.now(); 
-	        
-	        text = text.replace("{{1}}",Integer.toString(date.getDayOfMonth()));
-	        text = text.replace("{{2}}",Integer.toString(date.getMonthValue()));
-	        text = text.replace("{{3}}",Integer.toString(date.getYear()));
-	        text = text.replace("{{4}}",timeZoneRequest.getStartDate().toString());
-	        text = text.replace("{{5}}",timeZoneRequest.getEndDate().toString() );
-	        text = text.replace("{{6}}",Integer.toString(transport.getTotalPayCashOrder()));
-	        text = text.replace("{{7}}",Integer.toString(transport.getTotalMoneyItemPayCashOrder()));
-	        text = text.replace("{{8}}",Integer.toString(transport.getTotalPayWalletOrder()));
-	        text = text.replace("{{9}}",Integer.toString(transport.getTotalMoneyItemPayWalletOrder()));
-	        text = text.replace("{{10}}",Integer.toString(transport.getTotalCancelOrder()));
-	        text = text.replace("{{11}}",Integer.toString(transport.getTotalMoneyShipCancelOrder()));
-	        text = text.replace("{{12}}",Integer.toString(transport.getTotalMoneyShipPayCashOrder()));
-	        text = text.replace("{{13}}",Integer.toString(transport.getTotalMoneyShipPayWalletOrder()));
-	        text = text.replace("{{14}}",Integer.toString(transport.getAmountReceivable()));
-	         
-	        
-	        System.out.println(text);
-	        
-
-	        
-	        
-	        // Lưu file PDF đã chỉnh sửa vào bộ nhớ tạm thời
-	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-	        document.save(byteArrayOutputStream);
-	        byte[] pdfBytes = byteArrayOutputStream.toByteArray();
-	        
-	        
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.APPLICATION_PDF);
-	        headers.setContentDispositionFormData("attachment", "exported_report.pdf");
-	        headers.setContentLength(pdfBytes.length);
-	        
-	        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-	        
+//	// dung cai nay
+//	@PostMapping("/export/pdf/transportFee")
+//	public ResponseEntity<?> getExportPdfTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
+//	    Transport transport = calculateTransportFee(timeZoneRequest);
+//	    
+//	    try {
+//		    ClassPathResource pdfTemplate = new ClassPathResource("templateE.pdf");
+//	        InputStream pdfInputStream = pdfTemplate.getInputStream();
+//	        PDDocument document = PDDocument.load(pdfInputStream);
+//	
+//	        // Lấy toàn bộ nội dung của file PDF
+//	        PDFTextStripper pdfStripper = new PDFTextStripper();
+//	        String text = pdfStripper.getText(document);
+//	        
+//	        
+//	        LocalDate date = LocalDate.now(); 
+//	        
+//	        text = text.replace("{{1}}",Integer.toString(date.getDayOfMonth()));
+//	        text = text.replace("{{2}}",Integer.toString(date.getMonthValue()));
+//	        text = text.replace("{{3}}",Integer.toString(date.getYear()));
+//	        text = text.replace("{{4}}",timeZoneRequest.getStartDate().toString());
+//	        text = text.replace("{{5}}",timeZoneRequest.getEndDate().toString() );
+//	        text = text.replace("{{6}}",Integer.toString(transport.getTotalPayCashOrder()));
+//	        text = text.replace("{{7}}",Integer.toString(transport.getTotalMoneyItemPayCashOrder()));
+//	        text = text.replace("{{8}}",Integer.toString(transport.getTotalPayWalletOrder()));
+//	        text = text.replace("{{9}}",Integer.toString(transport.getTotalMoneyItemPayWalletOrder()));
+//	        text = text.replace("{{10}}",Integer.toString(transport.getTotalCancelOrder()));
+//	        text = text.replace("{{11}}",Integer.toString(transport.getTotalMoneyShipCancelOrder()));
+//	        text = text.replace("{{12}}",Integer.toString(transport.getTotalMoneyShipPayCashOrder()));
+//	        text = text.replace("{{13}}",Integer.toString(transport.getTotalMoneyShipPayWalletOrder()));
+//	        text = text.replace("{{14}}",Integer.toString(transport.getAmountReceivable()));
+//	         
+//	        
+//	        System.out.println(text);
+//	        
+//
+//	        
+//	        
+//	        // Lưu file PDF đã chỉnh sửa vào bộ nhớ tạm thời
+////	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+////	        document.save(byteArrayOutputStream);
+////	        byte[] pdfBytes = byteArrayOutputStream.toByteArray();
+////	        
+////	        
+////	        HttpHeaders headers = new HttpHeaders();
+////	        headers.setContentType(MediaType.APPLICATION_PDF);
+////	        headers.setContentDispositionFormData("attachment", "exported_report.pdf");
+////	        headers.setContentLength(pdfBytes.length);
+////	        
+////	        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+//	        
 //	        ByteArrayOutputStream baos = createPDF(text);
 //            HttpHeaders headers = new HttpHeaders();
 //            headers.setContentType(MediaType.APPLICATION_PDF);
 //            headers.setContentDispositionFormData("filename", "generated.pdf");
 //            return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
-	        
+//	        
+//
+//	    }catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//	}
+//	private ByteArrayOutputStream createPDF(String text) throws IOException {
+//		text = text.replace("\n", "").replace("\r", "");
+//        try (PDDocument document = new PDDocument();
+//             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+//            PDPage page = new PDPage();
+//            document.addPage(page);
+//
+//            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+//            contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
+//            contentStream.beginText();
+//            contentStream.newLineAtOffset(100, 700); 
+//            contentStream.showText(text);
+//            contentStream.endText();
+//            contentStream.close();
+//
+//            document.save(baos);
+//            return baos;
+//        }
+//    }
+	@PostMapping("/export/pdf/transportFee")
+	public ResponseEntity<?> getExportPdfTransportFee(@RequestBody StatisticsRequest timeZoneRequest) throws FileNotFoundException {
+	   
+	   
+	// Create a ByteArrayOutputStream to store the generated PDF content
+       ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-	    }catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+       // Create a PdfDocument with PdfWriter
+       PdfWriter writer = new PdfWriter(baos);
+       PdfDocument pdf = new PdfDocument(writer);
+
+       // Create a Document
+       Document document = new Document(pdf);
+
+       // Add content to the PDF document based on your template
+       addContentToPdf(document,timeZoneRequest);
+
+       // Close the Document
+       document.close();
+
+       // Convert ByteArrayOutputStream to byte array
+       byte[] pdfContents = baos.toByteArray();
+
+       // Set HttpHeaders to specify content type as application/pdf and content disposition as attachment
+       HttpHeaders headers = new HttpHeaders();
+       headers.setContentType(MediaType.APPLICATION_PDF);
+       headers.setContentDispositionFormData("attachment", "statistical_report.pdf");
+
+       // Return ResponseEntity with the PDF byte array and headers
+       return ResponseEntity.ok()
+               .headers(headers)
+               .body(pdfContents);
 	}
-	private ByteArrayOutputStream createPDF(String text) throws IOException {
-		text = text.replace("\n", "").replace("\r", "");
-        try (PDDocument document = new PDDocument();
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            PDPage page = new PDPage();
-            document.addPage(page);
+	
+	private void addContentToPdf(Document document,StatisticsRequest timeZoneRequest) {
+		Transport transport = calculateTransportFee(timeZoneRequest);
+        // Replace placeholders with actual data
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-            contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(100, 700); 
-            contentStream.showText(text);
-            contentStream.endText();
-            contentStream.close();
+        // Add content to the PDF document based on your template
+        // Center align and bold text
+        
+        Paragraph headerCom = new Paragraph()
+                .setTextAlignment(TextAlignment.LEFT)
+                .setBold()
+                .add("ECN9 Software Company");
+        document.add(headerCom);
+        
+        Paragraph header = new Paragraph()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setBold()
+                .add("SOCIALIST REPUBLIC OF VIETNAM\nIndependence - Freedom - Happiness\n…………");
+        document.add(header);
 
-            document.save(baos);
-            return baos;
-        }
+
+        document.add(new Paragraph());
+        Paragraph numParagraph = new Paragraph("Num: ……..  Ha Noi, " + currentDate)
+                .setTextAlignment(TextAlignment.RIGHT); // Align left
+        document.add(numParagraph);
+
+        document.add(new Paragraph());
+
+        Paragraph reportTitle = new Paragraph()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setBold()
+                .add("STATISTICAL REPORT ON PAYMENT OF SHIPPING COSTS");
+        document.add(reportTitle);
+
+        // Create a table with 2 columns
+        Table table = new Table(2);
+        table.setWidthPercent(100);
+
+        // Adding rows to the table with data
+        table.addCell("Start day");
+        table.addCell(timeZoneRequest.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        table.addCell("End date");
+        table.addCell(timeZoneRequest.getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        table.addCell("Total number of orders paid in cash");
+        table.addCell(Integer.toString(transport.getTotalPayCashOrder()));
+        table.addCell("Total cost of orders paid in cash");
+        table.addCell(Integer.toString(transport.getTotalMoneyItemPayCashOrder())+" vnd");
+        table.addCell("Total number of orders paid by e-wallet");
+        table.addCell(Integer.toString(transport.getTotalPayWalletOrder()));
+        table.addCell("Total amount for orders paid by e-wallet");
+        table.addCell(Integer.toString(transport.getTotalMoneyItemPayWalletOrder())+" vnd");
+        table.addCell("Total number of orders returned");
+        table.addCell(Integer.toString(transport.getTotalCancelOrder()));
+        table.addCell("Total shipping cost of returned orders");
+        table.addCell(Integer.toString(transport.getTotalMoneyShipCancelOrder())+" vnd");
+        table.addCell("Total shipping cost for orders paid by cash");
+        table.addCell(Integer.toString(transport.getTotalMoneyShipPayCashOrder())+" vnd");
+        table.addCell("Total shipping cost of orders paid by e-wallet");
+        table.addCell(Integer.toString(transport.getTotalMoneyShipPayWalletOrder())+" vnd");
+        table.addCell("Total amount receivable from the carrier");
+        table.addCell(Integer.toString(transport.getAmountReceivable())+" vnd");
+        // Add the table to the document
+        document.add(table);
+
+        document.add(new Paragraph());
+        document.add(new Paragraph("Comment:………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………"));
+        Paragraph directorParagraph = new Paragraph("Director of ECN9 Company")
+        		.setBold()
+                .setTextAlignment(TextAlignment.RIGHT); // Align left
+        document.add(directorParagraph);
     }
+	
+	
+	
+	
+	
+	
+	 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	  @PostMapping("/export/docx/transportFee")
-	    public ResponseEntity<?> getExportDocxTransportFee(@RequestBody StatisticsRequest timeZoneRequest) {
-	        Transport transport = calculateTransportFee(timeZoneRequest);
-
-	        try {
-	            // Load template Word document
-	            FileInputStream fis = new FileInputStream(new File("src/main/resources/templateE.docx"));
-	            XWPFDocument doc = new XWPFDocument(fis);
-
-	            // Replace placeholders with actual values
-	            replacePlaceholder(doc, "{{1}}", Integer.toString(LocalDate.now().getDayOfMonth()));
-	            replacePlaceholder(doc, "{{2}}", Integer.toString(LocalDate.now().getMonthValue()));
-	            replacePlaceholder(doc, "{{3}}", Integer.toString(LocalDate.now().getYear()));
-	            replacePlaceholder(doc, "{{4}}", timeZoneRequest.getStartDate().toString());
-	            replacePlaceholder(doc, "{{5}}", timeZoneRequest.getEndDate().toString());
-	            replacePlaceholder(doc, "{{6}}", Integer.toString(transport.getTotalPayCashOrder()));
-	            replacePlaceholder(doc, "{{7}}", Integer.toString(transport.getTotalMoneyItemPayCashOrder()));
-	            replacePlaceholder(doc, "{{8}}", Integer.toString(transport.getTotalPayWalletOrder()));
-	            replacePlaceholder(doc, "{{9}}", Integer.toString(transport.getTotalMoneyItemPayWalletOrder()));
-	            replacePlaceholder(doc, "{{10}}", Integer.toString(transport.getTotalCancelOrder()));
-	            replacePlaceholder(doc, "{{11}}", Integer.toString(transport.getTotalMoneyShipCancelOrder()));
-	            replacePlaceholder(doc, "{{12}}", Integer.toString(transport.getTotalMoneyShipPayCashOrder()));
-	            replacePlaceholder(doc, "{{13}}", Integer.toString(transport.getTotalMoneyShipPayWalletOrder()));
-	            replacePlaceholder(doc, "{{14}}", Integer.toString(transport.getAmountReceivable()));
-
-	            // Save modified document to temporary memory
-	            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-	            doc.write(byteArrayOutputStream);
-
-	            // Close input stream
-	            fis.close();
-
-	            // Prepare response headers
-	            HttpHeaders headers = new HttpHeaders();
-	            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-	            headers.setContentDispositionFormData("attachment", "exported_report.docx");
-	            headers.setContentLength(byteArrayOutputStream.size());
-
-	            // Return the modified Word document
-	            return new ResponseEntity<>(byteArrayOutputStream.toByteArray(), headers, HttpStatus.OK);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-	        }
-	    }
-
-	    private static void replacePlaceholder(XWPFDocument doc, String placeholder, String newValue) {
-	        for (XWPFParagraph p : doc.getParagraphs()) {
-	            for (XWPFRun r : p.getRuns()) {
-	                String text = r.getText(0);
-	                if (text != null && text.contains(placeholder)) {
-	                    text = text.replace(placeholder, newValue);
-	                    r.setText(text, 0);
-	                }
-	            }
-	        }
-	    }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private void setField(PDAcroForm acroForm, String string, String string2) {
-		// TODO Auto-generated method stub
-		
-	}
 
 
 	///báo cáo top 10 sản phẩm bán chạy
@@ -529,3 +471,8 @@ public class StatisticsController {
 
 	
 }
+
+
+
+
+
